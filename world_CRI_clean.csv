@@ -1,0 +1,455 @@
+year,country,CRI
+2012,Haiti ,6.83
+2012,Philippines ,10.33
+2012,Pakistan ,12.67
+2012,Madagascar ,15.67
+2012,Fiji ,17.0
+2012,Serbia ,17.67
+2012,Samoa ,18.33
+2012,Bosnia and Herzegovina ,21.67
+2012,Russia ,22.17
+2012,Nigeria ,22.33
+2012,Niger ,23.33
+2012,United States ,23.5
+2012,Bangladesh ,25.33
+2012,Comoros ,25.67
+2012,The Bahamas ,25.83
+2012,Mozambique ,27.17
+2012,Peru ,27.33
+2012,Chad ,28.0
+2012,Islamic Republic of Afghanistan ,28.83
+2012,Romania ,29.67
+2012,Cuba ,30.67
+2012,Paraguay ,31.83
+2012,Ukraine ,33.17
+2012,Croatia ,35.33
+2012,Colombia ,35.5
+2012,Kosovo ,36.0
+2012,China ,36.5
+2012,Nepal ,38.17
+2012,Kenya ,38.5
+2012,Sri Lanka ,38.5
+2012,Bulgaria ,39.0
+2012,Vietnam ,39.17
+2012,South Africa ,40.0
+2012,Slovak Republic ,43.0
+2012,Georgia ,43.17
+2012,Italy ,44.5
+2012,Spain ,45.83
+2012,Algeria ,46.67
+2012,Papua New Guinea ,46.83
+2012,Argentina ,47.0
+2012,Senegal ,47.17
+2012,Hungary ,47.67
+2012,Honduras ,51.0
+2012,Ecuador ,51.17
+2012,Korea. Republic of ,52.0
+2012,India ,52.17
+2012,Dominican Republic ,53.0
+2012,Sudan ,54.17
+2012,Japan ,54.67
+2012,Montenegro ,55.83
+2012,Canada ,56.0
+2012,Jamaica ,58.0
+2012,Moldova ,59.33
+2012,Poland ,62.17
+2012,Portugal ,63.17
+2012,Democratic Republic of Congo ,64.67
+2012,Malta ,64.67
+2012,Mexico ,65.17
+2012,Panama ,65.83
+2012,Slovenia ,66.17
+2012,Australia ,66.33
+2012,Cameroon ,66.83
+2012,Tunisia ,66.83
+2012,Chinese Taipei ,67.0
+2012,Cambodia ,67.17
+2012,Czech Republic ,67.33
+2012,Germany ,67.5
+2012,Republic of Congo ,67.67
+2012,The Gambia ,67.83
+2012,Thailand ,70.17
+2012,United Kingdom ,70.67
+2012,Indonesia ,71.5
+2012,Rwanda ,71.83
+2012,Belgium ,72.33
+2012,Former Yugoslav Republic of Ma- cedonia ,72.33
+2012,Guatemala ,72.67
+2012,Nicaragua ,72.67
+2012,Switzerland ,73.33
+2012,Central African Republic ,77.67
+2012,Malawi ,78.0
+2012,Solomon Islands ,78.33
+2012,Botswana ,78.83
+2012,France ,79.5
+2012,Mauritius ,79.67
+2012,Angola ,80.0
+2012,New Zealand ,80.17
+2012,Greece ,80.83
+2012,Lebanon ,81.17
+2012,Burundi ,81.67
+2012,Uganda ,81.67
+2012,Lithuania ,82.83
+2012,Latvia ,83.5
+2012,Gabon ,84.33
+2012,Kyrgyz Republic ,86.33
+2012,Austria ,87.17
+2012,Mali ,87.33
+2012,St. Kitts and Nevis ,88.5
+2012,Belize ,89.17
+2012,Turkey ,89.33
+2012,Burkina Faso ,90.0
+2012,Uruguay ,91.17
+2012,Guyana ,91.67
+2012,Oman ,91.67
+2012,Tonga ,92.17
+2012,Zimbabwe ,92.83
+2012,Trinidad and Tobago ,93.5
+2012,Namibia ,95.67
+2012,Tajikistan ,96.17
+2012,Ireland ,96.33
+2012,Saudi Arabia ,96.83
+2012,Iceland ,97.17
+2012,Bolivia ,97.33
+2012,Costa Rica ,97.67
+2012,Chile ,97.83
+2012,Benin ,100.33
+2012,Malaysia ,101.5
+2012,Albania ,101.83
+2012,Israel ,102.33
+2012,Azerbaijan ,103.5
+2012,Denmark ,104.5
+2012,Netherlands ,105.5
+2012,Estonia ,105.67
+2012,Belarus ,106.67
+2012,Sweden ,106.67
+2012,Dominica ,107.17
+2012,Zambia ,107.5
+2012,Myanmar ,109.33
+2012,Kazakhstan ,109.67
+2012,Vanuatu ,110.5
+2012,Swaziland ,112.17
+2012,Brazil ,113.17
+2012,Maldives ,115.67
+2012,Venezuela ,116.5
+2012,Mauritania ,116.83
+2012,Islamic Republic of Iran ,117.17
+2012,Ethiopia ,117.5
+2012,Morocco ,117.5
+2012,Guinea ,118.17
+2012,Iraq ,118.83
+2012,Liberia ,121.17
+2012,El Salvador ,121.5
+2012,Cote d'Ivoire ,125.83
+2012,Antigua and Barbuda ,126.17
+2012,Armenia ,126.17
+2012,Bahrain ,126.17
+2012,Barbados ,126.17
+2012,Bhutan ,126.17
+2012,Brunei Darussalam ,126.17
+2012,Cape Verde ,126.17
+2012,Cyprus ,126.17
+2012,Democratic Republic of Timor-Leste ,126.17
+2012,Djibouti ,126.17
+2012,Egypt ,126.17
+2012,Equatorial Guinea ,126.17
+2012,Eritrea ,126.17
+2012,Finland ,126.17
+2012,Ghana ,126.17
+2012,Grenada ,126.17
+2012,Guinea-Bissau ,126.17
+2012,Hong Kong SAR ,126.17
+2012,Jordan ,126.17
+2012,Kiribati ,126.17
+2012,Kuwait ,126.17
+2012,Lao People's Democratic Republic ,126.17
+2012,Lesotho ,126.17
+2012,Libya ,126.17
+2012,Luxembourg ,126.17
+2012,Mongolia ,126.17
+2012,Norway ,126.17
+2012,Qatar ,126.17
+2012,Republic of Yemen ,126.17
+2012,Sao Tome and Principe ,126.17
+2012,Seychelles ,126.17
+2012,Sierra Leone ,126.17
+2012,Singapore ,126.17
+2012,St. Lucia ,126.17
+2012,St. Vincent and the Grenadines ,126.17
+2012,Suriname ,126.17
+2012,Tanzania ,126.17
+2012,Togo ,126.17
+2012,Turkmenistan ,126.17
+2012,United Arab Emirates ,126.17
+2012,Uzbekistan ,126.17
+2015,Honduras,10.17
+2015,Myanmar,11.83
+2015,Haiti,16.83
+2015,Nicaragua,17.17
+2015,Bangladesh,19.67
+2015,Vietnam,24.0
+2015,Philippines,31.17
+2015,Dominican Republic,31.33
+2015,Mongolia,31.33
+2015,Guatemala,31.5
+2015,Thailand,31.5
+2015,Pakistan,31.83
+2015,El Salvador,34.17
+2015,Nepal,35.0
+2015,Grenada,36.0
+2015,Portugal,37.33
+2015,Afghanistan,37.5
+2015,India,38.5
+2015,Mozambique,40.17
+2015,Djibouti,40.5
+2015,Italy,40.67
+2015,Belize,42.33
+2015,China,42.33
+2015,France,42.67
+2015,Madagascar,42.83
+2015,Cambodia,43.0
+2015,Fiji,43.5
+2015,Russia,43.5
+2015,Ecuador,44.33
+2015,Tajikistan,44.5
+2015,United States,44.83
+2015,Germany,48.0
+2015,Spain,48.5
+2015,Switzerland,48.5
+2015,Romania,49.0
+2015,Bahamas,49.17
+2015,Oman,50.0
+2015,Australia,52.17
+2015,Bolivia,53.0
+2015,Dominica,53.5
+2015,Chinese Taipei,53.67
+2015,Colombia,54.17
+2015,Antigua and Barbuda,54.67
+2015,Moldova,56.17
+2015,Lucia,56.5
+2015,Cuba,57.0
+2015,Kitts and Nevis,57.33
+2015,Mexico,57.67
+2015,Croatia,59.17
+2015,Tonga,59.33
+2015,Papua New Guinea,59.5
+2015,Jamaica,60.5
+2015,Paraguay,60.67
+2015,Slovenia,61.17
+2015,Iran,61.33
+2015,Austria,61.83
+2015,"Korea,Republicof",62.17
+2015,Yemen,62.67
+2015,Peru,63.67
+2015,Venezuela,64.0
+2015,SriLanka,64.5
+2015,Namibia,65.5
+2015,Poland,66.5
+2015,Hungary,68.0
+2015,United Kingdom,68.67
+2015,Costa Rica,71.0
+2015,Czech Republic,71.17
+2015,Belgium,71.5
+2015,Gambia,73.0
+2015,Netherlands,74.33
+2015,Samoa,74.5
+2015,Indonesia,74.67
+2015,Laos,75.0
+2015,Niger,76.33
+2015,Mauritania,77.5
+2015,Kenya,80.17
+2015,Latvia,80.5
+2015,Ukraine,81.0
+2015,Ethiopia,81.33
+2015,Vincent and the Grenadines,82.5
+2015,Kyrgyz Republic,83.17
+2015,New Zealand,83.33
+2015,Bhutan,83.67
+2015,Uganda,83.67
+2015,Greece,84.33
+2015,Malaysia,85.17
+2015,South Africa,85.67
+2015,Morocco,86.67
+2015,Brazil,87.0
+2015,Bulgaria,87.0
+2015,Solomon Islands,87.67
+2015,Uruguay,88.17
+2015,Argentina,88.5
+2015,Georgia,88.83
+2015,Cyprus,89.67
+2015,Algeria,89.83
+2015,Japan,92.0
+2015,Macedonia,92.33
+2015,Chad,93.67
+2015,Tanzania,94.17
+2015,Malawi,94.5
+2015,Guyana,94.83
+2015,Panama,95.33
+2015,Burkina Faso,95.83
+2015,Swaziland,96.5
+2015,Zimbabwe,97.67
+2015,Bosnia and Herzegovina,98.17
+2015,Serbia,99.17
+2015,Montenegero,99.17
+2015,Kosovo,99.17
+2015,Slovak Republic,99.67
+2015,Sudan,100.0
+2015,Luxembourg,100.33
+2015,Canada,102.17
+2015,Nigeria,102.5
+2015,Mauritius,103.17
+2015,Turkey,104.17
+2015,Kiribati,104.33
+2015,Rwanda,106.33
+2015,Chile,106.5
+2015,Iceland,106.67
+2015,Angola,108.0
+2015,Saudi Arabia,109.83
+2015,Eritrea,110.33
+2015,Burundi,110.83
+2015,Ghana,112.17
+2015,Denmark,115.33
+2015,Zambia,115.33
+2015,Lesotho,117.0
+2015,Mali,117.17
+2015,Bahrain,117.67
+2015,Republic of Congo,117.83
+2015,Comoros,118.0
+2015,Sierra Leone,118.17
+2015,Botswana,120.5
+2015,Kazakhstan,120.83
+2015,Ireland,121.17
+2015,Israel,121.67
+2015,Egypt,121.83
+2015,Albania,122.67
+2015,Lithuania,123.67
+2015,Azerbaijan,126.33
+2015,Vanuatu,126.5
+2015,Jordan,126.83
+2015,Cameroon,128.17
+2015,Senegal,128.5
+2015,Armenia,129.33
+2015,Estonia,129.33
+2015,Sweden,129.5
+2015,Benin,130.17
+2015,Belarus,130.83
+2015,Lebanon,131.33
+2015,Norway,134.17
+2015,Uzbekistan,134.67
+2015,Guinea-Bissau,135.67
+2015,Barbados,137.5
+2015,Cape Verde,140.17
+2015,Democratic Republic of Congo,142.17
+2015,Togo,142.17
+2015,Trinidad and Tobago,142.33
+2015,Malta,144.83
+2015,Cote d'Ivoire,145.83
+2015,Tunisia,151.17
+2015,Central African Republic,153.83
+2015,Finland,154.17
+2015,Guinea,154.5
+2015,Turkmenistan,155.67
+2015,Iraq,155.83
+2015,United Arab Emirates,156.0
+2015,Seychelles,160.83
+2015,Suriname,161.5
+2015,Brunei Darussalam,163.67
+2015,Liberia,163.67
+2015,Libya,165.5
+2015,Kuwait,167.5
+2015,Singapore,168.5
+2015,Gabon,169.33
+2015,Democratic Republic of Timor-Leste,170.0
+2015,Maldives,174.0
+2015,Equatorial Guinea,175.5
+2015,Hong Kong,175.5
+2015,Qatar,175.5
+2015,Sao Tome and Principe,175.5
+2016,Haiti ,2.33
+2016,Fiji ,10.17
+2016,India ,18.33
+2016,Chinese Taipei ,18.5
+2016,Former Yugoslav Republic of Macedonia ,19.0
+2016,Bolivia ,19.33
+2016,Dominican Republic ,23.33
+2016,China ,23.83
+2016,Bangladesh ,27.0
+2016,Burundi ,34.5
+2016,Cyprus ,38.17
+2016,Islamic Republic of Afghanistan ,39.33
+2016,Costa Rica ,40.17
+2016,Ethiopia ,41.67
+2016,Honduras ,41.67
+2016,Australia ,42.17
+2016,Argentina ,44.67
+2016,Ecuador ,45.83
+2016,Angola ,46.0
+2016,Indonesia ,46.17
+2016,Germany ,51.5
+2016,Canada ,51.67
+2016,Kenya ,52.33
+2016,Brazil ,54.5
+2016,France ,56.33
+2016,Japan ,57.5
+2016,Belize ,58.0
+2016,Austria ,59.17
+2016,Korea. Republic of ,60.83
+2016,Chile ,62.0
+2016,Israel ,62.17
+2016,Greece ,63.17
+2016,Democratic Republic of Congo ,64.33
+2016,Bhutan ,67.17
+2016,Belgium ,68.0
+2016,Burkina Faso ,68.17
+2016,Kosovo ,68.67
+2016,Guatemala ,68.83
+2016,Colombia ,69.33
+2016,Albania ,69.83
+2016,Egypt ,73.33
+2016,Italy ,76.5
+2016,Islamic Republic of Iran ,76.83
+2016,Czech Republic ,78.83
+2016,Jamaica ,82.83
+2016,Ghana ,86.0
+2016,Azerbaijan ,87.5
+2016,Denmark ,90.33
+2016,El Salvador ,93.67
+2016,Cambodia ,95.17
+2016,Guinea ,97.0
+2016,Cameroon ,97.83
+2016,Kazakhstan ,97.83
+2016,Ireland ,101.5
+2016,Algeria ,103.5
+2016,Cote d'Ivoire ,105.17
+2016,Antigua and Barbuda ,109.5
+2016,Armenia ,109.5
+2016,Bahrain ,109.5
+2016,Barbados ,109.5
+2016,Belarus ,109.5
+2016,Benin ,109.5
+2016,Bosnia and Herzegovina ,109.5
+2016,Botswana ,109.5
+2016,Brunei Darussalam ,109.5
+2016,Bulgaria ,109.5
+2016,Cape Verde ,109.5
+2016,Central African Republic ,109.5
+2016,Chad ,109.5
+2016,Comoros ,109.5
+2016,Croatia ,109.5
+2016,Democratic Republic of Timor-Leste ,109.5
+2016,Djibouti ,109.5
+2016,Dominica ,109.5
+2016,Eritrea ,109.5
+2016,Estonia ,109.5
+2016,Finland ,109.5
+2016,Gabon ,109.5
+2016,Georgia ,109.5
+2016,Grenada ,109.5
+2016,Guinea-Bissau ,109.5
+2016,Guyana ,109.5
+2016,Hungary ,109.5
+2016,Iceland ,109.5
+2016,Iraq ,109.5
+2016,Jordan ,109.5
+2016,Kiribati ,109.5
+2016,Kuwait ,109.5
