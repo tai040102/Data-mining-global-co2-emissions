@@ -1,0 +1,455 @@
+Year,Code,Name,CRI
+2012,HTI,Haiti ,6.83
+2012,PHL,Philippines ,10.33
+2012,PAK,Pakistan ,12.67
+2012,MDG,Madagascar ,15.67
+2012,FJI,Fiji ,17.0
+2012,SRB,Serbia ,17.67
+2012,WSM,Samoa ,18.33
+2012,BIH,Bosnia and Herzegovina ,21.67
+2012,RUS,Russia ,22.17
+2012,NGA,Nigeria ,22.33
+2012,NER,Niger ,23.33
+2012,USA,United States ,23.5
+2012,BGD,Bangladesh ,25.33
+2012,COM,Comoros ,25.67
+2012,BHS,The Bahamas ,25.83
+2012,MOZ,Mozambique ,27.17
+2012,PER,Peru ,27.33
+2012,TCD,Chad ,28.0
+2012,AFG,Islamic Republic of Afghanistan ,28.83
+2012,ROU,Romania ,29.67
+2012,CUB,Cuba ,30.67
+2012,PRY,Paraguay ,31.83
+2012,UKR,Ukraine ,33.17
+2012,HRV,Croatia ,35.33
+2012,COL,Colombia ,35.5
+2012,XKX,Kosovo ,36.0
+2012,CHN,China ,36.5
+2012,NPL,Nepal ,38.17
+2012,KEN,Kenya ,38.5
+2012,LKA,Sri Lanka ,38.5
+2012,BGR,Bulgaria ,39.0
+2012,VNM,Vietnam ,39.17
+2012,ZAF,South Africa ,40.0
+2012,SVK,Slovak Republic ,43.0
+2012,GEO,Georgia ,43.17
+2012,ITA,Italy ,44.5
+2012,ESP,Spain ,45.83
+2012,DZA,Algeria ,46.67
+2012,PNG,Papua New Guinea ,46.83
+2012,ARG,Argentina ,47.0
+2012,SEN,Senegal ,47.17
+2012,HUN,Hungary ,47.67
+2012,HND,Honduras ,51.0
+2012,ECU,Ecuador ,51.17
+2012,KOR,Korea. Republic of ,52.0
+2012,IND,India ,52.17
+2012,DOM,Dominican Republic ,53.0
+2012,SDN,Sudan ,54.17
+2012,JPN,Japan ,54.67
+2012,MNE,Montenegro ,55.83
+2012,CAN,Canada ,56.0
+2012,JAM,Jamaica ,58.0
+2012,MDA,Moldova ,59.33
+2012,POL,Poland ,62.17
+2012,PRT,Portugal ,63.17
+2012,COD,Democratic Republic of Congo ,64.67
+2012,MLT,Malta ,64.67
+2012,MEX,Mexico ,65.17
+2012,PAN,Panama ,65.83
+2012,SVN,Slovenia ,66.17
+2012,AUS,Australia ,66.33
+2012,CMR,Cameroon ,66.83
+2012,TUN,Tunisia ,66.83
+2012,TWN,Chinese Taipei ,67.0
+2012,KHM,Cambodia ,67.17
+2012,CZE,Czech Republic ,67.33
+2012,DEU,Germany ,67.5
+2012,COG,Republic of Congo ,67.67
+2012,GMB,The Gambia ,67.83
+2012,THA,Thailand ,70.17
+2012,GBR,United Kingdom ,70.67
+2012,IDN,Indonesia ,71.5
+2012,RWA,Rwanda ,71.83
+2012,BEL,Belgium ,72.33
+2012,not found,Former Yugoslav Republic of Ma- cedonia ,72.33
+2012,GTM,Guatemala ,72.67
+2012,NIC,Nicaragua ,72.67
+2012,CHE,Switzerland ,73.33
+2012,CAF,Central African Republic ,77.67
+2012,MWI,Malawi ,78.0
+2012,SLB,Solomon Islands ,78.33
+2012,BWA,Botswana ,78.83
+2012,FRA,France ,79.5
+2012,MUS,Mauritius ,79.67
+2012,AGO,Angola ,80.0
+2012,NZL,New Zealand ,80.17
+2012,GRC,Greece ,80.83
+2012,LBN,Lebanon ,81.17
+2012,BDI,Burundi ,81.67
+2012,UGA,Uganda ,81.67
+2012,LTU,Lithuania ,82.83
+2012,LVA,Latvia ,83.5
+2012,GAB,Gabon ,84.33
+2012,KGZ,Kyrgyz Republic ,86.33
+2012,AUT,Austria ,87.17
+2012,MLI,Mali ,87.33
+2012,KNA,St. Kitts and Nevis ,88.5
+2012,BLZ,Belize ,89.17
+2012,TUR,Turkey ,89.33
+2012,BFA,Burkina Faso ,90.0
+2012,URY,Uruguay ,91.17
+2012,GUY,Guyana ,91.67
+2012,OMN,Oman ,91.67
+2012,TON,Tonga ,92.17
+2012,ZWE,Zimbabwe ,92.83
+2012,TTO,Trinidad and Tobago ,93.5
+2012,NAM,Namibia ,95.67
+2012,TJK,Tajikistan ,96.17
+2012,IRL,Ireland ,96.33
+2012,SAU,Saudi Arabia ,96.83
+2012,ISL,Iceland ,97.17
+2012,BOL,Bolivia ,97.33
+2012,CRI,Costa Rica ,97.67
+2012,CHL,Chile ,97.83
+2012,BEN,Benin ,100.33
+2012,MYS,Malaysia ,101.5
+2012,ALB,Albania ,101.83
+2012,ISR,Israel ,102.33
+2012,AZE,Azerbaijan ,103.5
+2012,DNK,Denmark ,104.5
+2012,NLD,Netherlands ,105.5
+2012,EST,Estonia ,105.67
+2012,BLR,Belarus ,106.67
+2012,SWE,Sweden ,106.67
+2012,DMA,Dominica ,107.17
+2012,ZMB,Zambia ,107.5
+2012,MMR,Myanmar ,109.33
+2012,KAZ,Kazakhstan ,109.67
+2012,VUT,Vanuatu ,110.5
+2012,SWZ,Swaziland ,112.17
+2012,BRA,Brazil ,113.17
+2012,MDV,Maldives ,115.67
+2012,VEN,Venezuela ,116.5
+2012,MRT,Mauritania ,116.83
+2012,IRN,Islamic Republic of Iran ,117.17
+2012,ETH,Ethiopia ,117.5
+2012,MAR,Morocco ,117.5
+2012,GIN,Guinea ,118.17
+2012,IRQ,Iraq ,118.83
+2012,LBR,Liberia ,121.17
+2012,SLV,El Salvador ,121.5
+2012,CIV,Cote d'Ivoire ,125.83
+2012,ATG,Antigua and Barbuda ,126.17
+2012,ARM,Armenia ,126.17
+2012,BHR,Bahrain ,126.17
+2012,BRB,Barbados ,126.17
+2012,BTN,Bhutan ,126.17
+2012,BRN,Brunei Darussalam ,126.17
+2012,CPV,Cape Verde ,126.17
+2012,CYP,Cyprus ,126.17
+2012,TLS,Democratic Republic of Timor-Leste ,126.17
+2012,DJI,Djibouti ,126.17
+2012,EGY,Egypt ,126.17
+2012,GNQ,Equatorial Guinea ,126.17
+2012,ERI,Eritrea ,126.17
+2012,FIN,Finland ,126.17
+2012,GHA,Ghana ,126.17
+2012,GRD,Grenada ,126.17
+2012,GNB,Guinea-Bissau ,126.17
+2012,HKG,Hong Kong SAR ,126.17
+2012,JOR,Jordan ,126.17
+2012,KIR,Kiribati ,126.17
+2012,KWT,Kuwait ,126.17
+2012,LAO,Lao People's Democratic Republic ,126.17
+2012,LSO,Lesotho ,126.17
+2012,LBY,Libya ,126.17
+2012,LUX,Luxembourg ,126.17
+2012,MNG,Mongolia ,126.17
+2012,NOR,Norway ,126.17
+2012,QAT,Qatar ,126.17
+2012,YEM,Republic of Yemen ,126.17
+2012,STP,Sao Tome and Principe ,126.17
+2012,SYC,Seychelles ,126.17
+2012,SLE,Sierra Leone ,126.17
+2012,SGP,Singapore ,126.17
+2012,LCA,St. Lucia ,126.17
+2012,VCT,St. Vincent and the Grenadines ,126.17
+2012,SUR,Suriname ,126.17
+2012,TZA,Tanzania ,126.17
+2012,TGO,Togo ,126.17
+2012,TKM,Turkmenistan ,126.17
+2012,ARE,United Arab Emirates ,126.17
+2012,UZB,Uzbekistan ,126.17
+2015,HND,Honduras,10.17
+2015,MMR,Myanmar,11.83
+2015,HTI,Haiti,16.83
+2015,NIC,Nicaragua,17.17
+2015,BGD,Bangladesh,19.67
+2015,VNM,Vietnam,24.0
+2015,PHL,Philippines,31.17
+2015,DOM,Dominican Republic,31.33
+2015,MNG,Mongolia,31.33
+2015,GTM,Guatemala,31.5
+2015,THA,Thailand,31.5
+2015,PAK,Pakistan,31.83
+2015,SLV,El Salvador,34.17
+2015,NPL,Nepal,35.0
+2015,GRD,Grenada,36.0
+2015,PRT,Portugal,37.33
+2015,AFG,Afghanistan,37.5
+2015,IND,India,38.5
+2015,MOZ,Mozambique,40.17
+2015,DJI,Djibouti,40.5
+2015,ITA,Italy,40.67
+2015,BLZ,Belize,42.33
+2015,CHN,China,42.33
+2015,FRA,France,42.67
+2015,MDG,Madagascar,42.83
+2015,KHM,Cambodia,43.0
+2015,FJI,Fiji,43.5
+2015,RUS,Russia,43.5
+2015,ECU,Ecuador,44.33
+2015,TJK,Tajikistan,44.5
+2015,USA,United States,44.83
+2015,DEU,Germany,48.0
+2015,ESP,Spain,48.5
+2015,CHE,Switzerland,48.5
+2015,ROU,Romania,49.0
+2015,BHS,Bahamas,49.17
+2015,OMN,Oman,50.0
+2015,AUS,Australia,52.17
+2015,BOL,Bolivia,53.0
+2015,DMA,Dominica,53.5
+2015,TWN,Chinese Taipei,53.67
+2015,COL,Colombia,54.17
+2015,ATG,Antigua and Barbuda,54.67
+2015,MDA,Moldova,56.17
+2015,LCA,Lucia,56.5
+2015,CUB,Cuba,57.0
+2015,KNA,Kitts and Nevis,57.33
+2015,MEX,Mexico,57.67
+2015,HRV,Croatia,59.17
+2015,TON,Tonga,59.33
+2015,PNG,Papua New Guinea,59.5
+2015,JAM,Jamaica,60.5
+2015,PRY,Paraguay,60.67
+2015,SVN,Slovenia,61.17
+2015,IRN,Iran,61.33
+2015,AUT,Austria,61.83
+2015,KOR,"Korea,Republicof",62.17
+2015,YEM,Yemen,62.67
+2015,PER,Peru,63.67
+2015,VEN,Venezuela,64.0
+2015,LKA,SriLanka,64.5
+2015,NAM,Namibia,65.5
+2015,POL,Poland,66.5
+2015,HUN,Hungary,68.0
+2015,GBR,United Kingdom,68.67
+2015,CRI,Costa Rica,71.0
+2015,CZE,Czech Republic,71.17
+2015,BEL,Belgium,71.5
+2015,GMB,Gambia,73.0
+2015,NLD,Netherlands,74.33
+2015,WSM,Samoa,74.5
+2015,IDN,Indonesia,74.67
+2015,LAO,Laos,75.0
+2015,NER,Niger,76.33
+2015,MRT,Mauritania,77.5
+2015,KEN,Kenya,80.17
+2015,LVA,Latvia,80.5
+2015,UKR,Ukraine,81.0
+2015,ETH,Ethiopia,81.33
+2015,VCT,Vincent and the Grenadines,82.5
+2015,KGZ,Kyrgyz Republic,83.17
+2015,NZL,New Zealand,83.33
+2015,BTN,Bhutan,83.67
+2015,UGA,Uganda,83.67
+2015,GRC,Greece,84.33
+2015,MYS,Malaysia,85.17
+2015,ZAF,South Africa,85.67
+2015,MAR,Morocco,86.67
+2015,BRA,Brazil,87.0
+2015,BGR,Bulgaria,87.0
+2015,SLB,Solomon Islands,87.67
+2015,URY,Uruguay,88.17
+2015,ARG,Argentina,88.5
+2015,GEO,Georgia,88.83
+2015,CYP,Cyprus,89.67
+2015,DZA,Algeria,89.83
+2015,JPN,Japan,92.0
+2015,MKD,Macedonia,92.33
+2015,TCD,Chad,93.67
+2015,TZA,Tanzania,94.17
+2015,MWI,Malawi,94.5
+2015,GUY,Guyana,94.83
+2015,PAN,Panama,95.33
+2015,BFA,Burkina Faso,95.83
+2015,SWZ,Swaziland,96.5
+2015,ZWE,Zimbabwe,97.67
+2015,BIH,Bosnia and Herzegovina,98.17
+2015,SRB,Serbia,99.17
+2015,not found,Montenegero,99.17
+2015,XKX,Kosovo,99.17
+2015,SVK,Slovak Republic,99.67
+2015,SDN,Sudan,100.0
+2015,LUX,Luxembourg,100.33
+2015,CAN,Canada,102.17
+2015,NGA,Nigeria,102.5
+2015,MUS,Mauritius,103.17
+2015,TUR,Turkey,104.17
+2015,KIR,Kiribati,104.33
+2015,RWA,Rwanda,106.33
+2015,CHL,Chile,106.5
+2015,ISL,Iceland,106.67
+2015,AGO,Angola,108.0
+2015,SAU,Saudi Arabia,109.83
+2015,ERI,Eritrea,110.33
+2015,BDI,Burundi,110.83
+2015,GHA,Ghana,112.17
+2015,DNK,Denmark,115.33
+2015,ZMB,Zambia,115.33
+2015,LSO,Lesotho,117.0
+2015,MLI,Mali,117.17
+2015,BHR,Bahrain,117.67
+2015,COG,Republic of Congo,117.83
+2015,COM,Comoros,118.0
+2015,SLE,Sierra Leone,118.17
+2015,BWA,Botswana,120.5
+2015,KAZ,Kazakhstan,120.83
+2015,IRL,Ireland,121.17
+2015,ISR,Israel,121.67
+2015,EGY,Egypt,121.83
+2015,ALB,Albania,122.67
+2015,LTU,Lithuania,123.67
+2015,AZE,Azerbaijan,126.33
+2015,VUT,Vanuatu,126.5
+2015,JOR,Jordan,126.83
+2015,CMR,Cameroon,128.17
+2015,SEN,Senegal,128.5
+2015,ARM,Armenia,129.33
+2015,EST,Estonia,129.33
+2015,SWE,Sweden,129.5
+2015,BEN,Benin,130.17
+2015,BLR,Belarus,130.83
+2015,LBN,Lebanon,131.33
+2015,NOR,Norway,134.17
+2015,UZB,Uzbekistan,134.67
+2015,GNB,Guinea-Bissau,135.67
+2015,BRB,Barbados,137.5
+2015,CPV,Cape Verde,140.17
+2015,COD,Democratic Republic of Congo,142.17
+2015,TGO,Togo,142.17
+2015,TTO,Trinidad and Tobago,142.33
+2015,MLT,Malta,144.83
+2015,CIV,Cote d'Ivoire,145.83
+2015,TUN,Tunisia,151.17
+2015,CAF,Central African Republic,153.83
+2015,FIN,Finland,154.17
+2015,GIN,Guinea,154.5
+2015,TKM,Turkmenistan,155.67
+2015,IRQ,Iraq,155.83
+2015,ARE,United Arab Emirates,156.0
+2015,SYC,Seychelles,160.83
+2015,SUR,Suriname,161.5
+2015,BRN,Brunei Darussalam,163.67
+2015,LBR,Liberia,163.67
+2015,LBY,Libya,165.5
+2015,KWT,Kuwait,167.5
+2015,SGP,Singapore,168.5
+2015,GAB,Gabon,169.33
+2015,TLS,Democratic Republic of Timor-Leste,170.0
+2015,MDV,Maldives,174.0
+2015,GNQ,Equatorial Guinea,175.5
+2015,HKG,Hong Kong,175.5
+2015,QAT,Qatar,175.5
+2015,STP,Sao Tome and Principe,175.5
+2016,HTI,Haiti ,2.33
+2016,FJI,Fiji ,10.17
+2016,IND,India ,18.33
+2016,TWN,Chinese Taipei ,18.5
+2016,MKD,Former Yugoslav Republic of Macedonia ,19.0
+2016,BOL,Bolivia ,19.33
+2016,DOM,Dominican Republic ,23.33
+2016,CHN,China ,23.83
+2016,BGD,Bangladesh ,27.0
+2016,BDI,Burundi ,34.5
+2016,CYP,Cyprus ,38.17
+2016,AFG,Islamic Republic of Afghanistan ,39.33
+2016,CRI,Costa Rica ,40.17
+2016,ETH,Ethiopia ,41.67
+2016,HND,Honduras ,41.67
+2016,AUS,Australia ,42.17
+2016,ARG,Argentina ,44.67
+2016,ECU,Ecuador ,45.83
+2016,AGO,Angola ,46.0
+2016,IDN,Indonesia ,46.17
+2016,DEU,Germany ,51.5
+2016,CAN,Canada ,51.67
+2016,KEN,Kenya ,52.33
+2016,BRA,Brazil ,54.5
+2016,FRA,France ,56.33
+2016,JPN,Japan ,57.5
+2016,BLZ,Belize ,58.0
+2016,AUT,Austria ,59.17
+2016,KOR,Korea. Republic of ,60.83
+2016,CHL,Chile ,62.0
+2016,ISR,Israel ,62.17
+2016,GRC,Greece ,63.17
+2016,COD,Democratic Republic of Congo ,64.33
+2016,BTN,Bhutan ,67.17
+2016,BEL,Belgium ,68.0
+2016,BFA,Burkina Faso ,68.17
+2016,XKX,Kosovo ,68.67
+2016,GTM,Guatemala ,68.83
+2016,COL,Colombia ,69.33
+2016,ALB,Albania ,69.83
+2016,EGY,Egypt ,73.33
+2016,ITA,Italy ,76.5
+2016,IRN,Islamic Republic of Iran ,76.83
+2016,CZE,Czech Republic ,78.83
+2016,JAM,Jamaica ,82.83
+2016,GHA,Ghana ,86.0
+2016,AZE,Azerbaijan ,87.5
+2016,DNK,Denmark ,90.33
+2016,SLV,El Salvador ,93.67
+2016,KHM,Cambodia ,95.17
+2016,GIN,Guinea ,97.0
+2016,CMR,Cameroon ,97.83
+2016,KAZ,Kazakhstan ,97.83
+2016,IRL,Ireland ,101.5
+2016,DZA,Algeria ,103.5
+2016,CIV,Cote d'Ivoire ,105.17
+2016,ATG,Antigua and Barbuda ,109.5
+2016,ARM,Armenia ,109.5
+2016,BHR,Bahrain ,109.5
+2016,BRB,Barbados ,109.5
+2016,BLR,Belarus ,109.5
+2016,BEN,Benin ,109.5
+2016,BIH,Bosnia and Herzegovina ,109.5
+2016,BWA,Botswana ,109.5
+2016,BRN,Brunei Darussalam ,109.5
+2016,BGR,Bulgaria ,109.5
+2016,CPV,Cape Verde ,109.5
+2016,CAF,Central African Republic ,109.5
+2016,TCD,Chad ,109.5
+2016,COM,Comoros ,109.5
+2016,HRV,Croatia ,109.5
+2016,TLS,Democratic Republic of Timor-Leste ,109.5
+2016,DJI,Djibouti ,109.5
+2016,DMA,Dominica ,109.5
+2016,ERI,Eritrea ,109.5
+2016,EST,Estonia ,109.5
+2016,FIN,Finland ,109.5
+2016,GAB,Gabon ,109.5
+2016,GEO,Georgia ,109.5
+2016,GRD,Grenada ,109.5
+2016,GNB,Guinea-Bissau ,109.5
+2016,GUY,Guyana ,109.5
+2016,HUN,Hungary ,109.5
+2016,ISL,Iceland ,109.5
+2016,IRQ,Iraq ,109.5
+2016,JOR,Jordan ,109.5
+2016,KIR,Kiribati ,109.5
+2016,KWT,Kuwait ,109.5
