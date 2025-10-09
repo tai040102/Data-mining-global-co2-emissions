@@ -1,0 +1,648 @@
+Year,Code,Name,Environmental_protection
+2007,AUS,Australia,1.864
+2008,AUS,Australia,1.879
+2009,AUS,Australia,2.135
+2010,AUS,Australia,2.372
+2011,AUS,Australia,2.64
+2012,AUS,Australia,2.738
+2013,AUS,Australia,2.671
+2014,AUS,Australia,2.11
+2015,AUS,Australia,2.173
+2016,AUS,Australia,2.249
+2017,AUS,Australia,2.354
+2018,AUS,Australia,2.333
+2019,AUS,Australia,2.195
+2020,AUS,Australia,2.094
+2021,AUS,Australia,2.244
+2022,AUS,Australia,2.431
+2023,AUS,Australia,2.265
+2007,AUT,Austria,0.886
+2008,AUT,Austria,0.891
+2009,AUT,Austria,0.984
+2010,AUT,Austria,1.044
+2011,AUT,Austria,0.923
+2012,AUT,Austria,0.9
+2013,AUT,Austria,0.822
+2014,AUT,Austria,0.823
+2015,AUT,Austria,0.692
+2016,AUT,Austria,0.705
+2017,AUT,Austria,0.713
+2018,AUT,Austria,0.749
+2019,AUT,Austria,0.785
+2020,AUT,Austria,0.695
+2021,AUT,Austria,0.735
+2022,AUT,Austria,0.905
+2023,AUT,Austria,1.089
+2007,BEL,Belgium,1.67
+2008,BEL,Belgium,1.888
+2009,BEL,Belgium,1.996
+2010,BEL,Belgium,2.311
+2011,BEL,Belgium,2.696
+2012,BEL,Belgium,2.766
+2013,BEL,Belgium,2.744
+2014,BEL,Belgium,2.44
+2015,BEL,Belgium,2.369
+2016,BEL,Belgium,2.213
+2017,BEL,Belgium,2.437
+2018,BEL,Belgium,2.462
+2019,BEL,Belgium,2.55
+2020,BEL,Belgium,2.426
+2021,BEL,Belgium,2.469
+2022,BEL,Belgium,2.367
+2023,BEL,Belgium,2.255
+2007,BGR,Bulgaria,3.205
+2008,BGR,Bulgaria,1.827
+2009,BGR,Bulgaria,2.794
+2010,BGR,Bulgaria,1.841
+2011,BGR,Bulgaria,2.032
+2012,BGR,Bulgaria,1.997
+2013,BGR,Bulgaria,2.495
+2014,BGR,Bulgaria,1.589
+2015,BGR,Bulgaria,1.926
+2016,BGR,Bulgaria,1.898
+2017,BGR,Bulgaria,1.927
+2018,BGR,Bulgaria,1.893
+2019,BGR,Bulgaria,1.856
+2020,BGR,Bulgaria,1.672
+2021,BGR,Bulgaria,1.842
+2022,BGR,Bulgaria,1.793
+2023,BGR,Bulgaria,1.753
+2013,CHL,Chile,0.687
+2014,CHL,Chile,0.679
+2015,CHL,Chile,0.695
+2016,CHL,Chile,0.836
+2017,CHL,Chile,0.662
+2018,CHL,Chile,0.642
+2019,CHL,Chile,0.708
+2020,CHL,Chile,0.525
+2021,CHL,Chile,0.429
+2022,CHL,Chile,0.516
+2023,CHL,Chile,0.557
+2009,COL,Colombia,1.262
+2010,COL,Colombia,1.315
+2011,COL,Colombia,1.392
+2012,COL,Colombia,0.91
+2013,COL,Colombia,0.993
+2014,COL,Colombia,0.897
+2015,COL,Colombia,1.179
+2016,COL,Colombia,1.094
+2017,COL,Colombia,1.081
+2018,COL,Colombia,1.22
+2019,COL,Colombia,1.287
+2020,COL,Colombia,0.95
+2021,COL,Colombia,1.076
+2022,COL,Colombia,1.076
+2023,COL,Colombia,1.173
+2012,CRI,Costa Rica,1.321
+2013,CRI,Costa Rica,1.234
+2014,CRI,Costa Rica,1.42
+2015,CRI,Costa Rica,1.618
+2016,CRI,Costa Rica,1.221
+2017,CRI,Costa Rica,1.243
+2018,CRI,Costa Rica,1.22
+2019,CRI,Costa Rica,1.258
+2020,CRI,Costa Rica,1.131
+2021,CRI,Costa Rica,1.055
+2007,HRV,Croatia,1.757
+2008,HRV,Croatia,1.706
+2009,HRV,Croatia,1.631
+2010,HRV,Croatia,1.635
+2011,HRV,Croatia,1.771
+2012,HRV,Croatia,1.841
+2013,HRV,Croatia,1.871
+2014,HRV,Croatia,1.765
+2015,HRV,Croatia,1.721
+2016,HRV,Croatia,1.897
+2017,HRV,Croatia,1.748
+2018,HRV,Croatia,1.89
+2019,HRV,Croatia,1.845
+2020,HRV,Croatia,1.621
+2021,HRV,Croatia,1.774
+2022,HRV,Croatia,1.689
+2023,HRV,Croatia,1.761
+2007,CZE,Czechia,2.367
+2008,CZE,Czechia,2.224
+2009,CZE,Czechia,1.546
+2010,CZE,Czechia,2.393
+2011,CZE,Czechia,3.098
+2012,CZE,Czechia,3.112
+2013,CZE,Czechia,2.504
+2014,CZE,Czechia,2.62
+2015,CZE,Czechia,2.772
+2016,CZE,Czechia,2.024
+2017,CZE,Czechia,2.217
+2018,CZE,Czechia,2.251
+2019,CZE,Czechia,2.109
+2020,CZE,Czechia,1.987
+2021,CZE,Czechia,2.151
+2022,CZE,Czechia,2.019
+2023,CZE,Czechia,1.922
+2007,DNK,Denmark,1.016
+2008,DNK,Denmark,0.903
+2009,DNK,Denmark,0.78
+2010,DNK,Denmark,0.728
+2011,DNK,Denmark,0.746
+2012,DNK,Denmark,0.759
+2013,DNK,Denmark,0.846
+2014,DNK,Denmark,0.796
+2015,DNK,Denmark,0.774
+2016,DNK,Denmark,0.77
+2017,DNK,Denmark,0.787
+2018,DNK,Denmark,0.783
+2019,DNK,Denmark,0.781
+2020,DNK,Denmark,0.755
+2021,DNK,Denmark,0.726
+2022,DNK,Denmark,0.8
+2023,DNK,Denmark,0.842
+2007,,EU countries in OECD,1.69
+2008,,EU countries in OECD,1.68
+2009,,EU countries in OECD,1.67
+2010,,EU countries in OECD,1.66
+2011,,EU countries in OECD,1.7
+2012,,EU countries in OECD,1.68
+2013,,EU countries in OECD,1.72
+2014,,EU countries in OECD,1.69
+2015,,EU countries in OECD,1.68
+2016,,EU countries in OECD,1.6
+2017,,EU countries in OECD,1.6
+2018,,EU countries in OECD,1.65
+2019,,EU countries in OECD,1.67
+2020,,EU countries in OECD,1.57
+2021,,EU countries in OECD,1.55
+2022,,EU countries in OECD,1.61
+2023,,EU countries in OECD,1.68
+2007,EST,Estonia,2.526
+2008,EST,Estonia,2.719
+2009,EST,Estonia,1.672
+2010,EST,Estonia,-0.635
+2011,EST,Estonia,-0.456
+2012,EST,Estonia,2.206
+2013,EST,Estonia,1.721
+2014,EST,Estonia,1.81
+2015,EST,Estonia,1.813
+2016,EST,Estonia,1.492
+2017,EST,Estonia,1.855
+2018,EST,Estonia,1.884
+2019,EST,Estonia,1.682
+2020,EST,Estonia,1.479
+2021,EST,Estonia,1.322
+2022,EST,Estonia,1.303
+2023,EST,Estonia,1.66
+2007,FIN,Finland,0.685
+2008,FIN,Finland,0.639
+2009,FIN,Finland,0.63
+2010,FIN,Finland,0.512
+2011,FIN,Finland,0.451
+2012,FIN,Finland,0.444
+2013,FIN,Finland,0.449
+2014,FIN,Finland,0.439
+2015,FIN,Finland,0.422
+2016,FIN,Finland,0.412
+2017,FIN,Finland,0.38
+2018,FIN,Finland,0.374
+2019,FIN,Finland,0.369
+2020,FIN,Finland,0.405
+2021,FIN,Finland,0.421
+2022,FIN,Finland,0.428
+2023,FIN,Finland,0.389
+2007,FRA,France,1.654
+2008,FRA,France,1.676
+2009,FRA,France,1.736
+2010,FRA,France,1.747
+2011,FRA,France,1.761
+2012,FRA,France,1.761
+2013,FRA,France,1.787
+2014,FRA,France,1.788
+2015,FRA,France,1.769
+2016,FRA,France,1.667
+2017,FRA,France,1.655
+2018,FRA,France,1.731
+2019,FRA,France,1.709
+2020,FRA,France,1.59
+2021,FRA,France,1.648
+2022,FRA,France,1.751
+2023,FRA,France,1.791
+2007,DEU,Germany,1.156
+2008,DEU,Germany,1.123
+2009,DEU,Germany,1.174
+2010,DEU,Germany,1.116
+2011,DEU,Germany,1.226
+2012,DEU,Germany,1.242
+2013,DEU,Germany,1.256
+2014,DEU,Germany,1.25
+2015,DEU,Germany,1.216
+2016,DEU,Germany,1.214
+2017,DEU,Germany,1.197
+2018,DEU,Germany,1.262
+2019,DEU,Germany,1.279
+2020,DEU,Germany,1.251
+2021,DEU,Germany,1.09
+2022,DEU,Germany,1.106
+2023,DEU,Germany,1.202
+2007,GRC,Greece,1.686
+2008,GRC,Greece,1.787
+2009,GRC,Greece,1.625
+2010,GRC,Greece,1.473
+2011,GRC,Greece,1.561
+2012,GRC,Greece,1.943
+2013,GRC,Greece,2.689
+2014,GRC,Greece,2.89
+2015,GRC,Greece,2.705
+2016,GRC,Greece,2.998
+2017,GRC,Greece,2.879
+2018,GRC,Greece,2.828
+2019,GRC,Greece,2.844
+2020,GRC,Greece,2.722
+2021,GRC,Greece,2.091
+2022,GRC,Greece,1.908
+2023,GRC,Greece,3.103
+2007,HUN,Hungary,1.212
+2008,HUN,Hungary,1.314
+2009,HUN,Hungary,1.173
+2010,HUN,Hungary,1.184
+2011,HUN,Hungary,1.44
+2012,HUN,Hungary,1.401
+2013,HUN,Hungary,1.811
+2014,HUN,Hungary,2.31
+2015,HUN,Hungary,2.361
+2016,HUN,Hungary,1.059
+2017,HUN,Hungary,1.402
+2018,HUN,Hungary,1.361
+2019,HUN,Hungary,1.558
+2020,HUN,Hungary,1.473
+2021,HUN,Hungary,1.487
+2022,HUN,Hungary,1.296
+2023,HUN,Hungary,1.171
+2007,ISL,Iceland,1.352
+2008,ISL,Iceland,0.99
+2009,ISL,Iceland,1.165
+2010,ISL,Iceland,1.213
+2011,ISL,Iceland,1.117
+2012,ISL,Iceland,1.212
+2013,ISL,Iceland,1.115
+2014,ISL,Iceland,1.345
+2015,ISL,Iceland,1.276
+2016,ISL,Iceland,1.191
+2017,ISL,Iceland,1.391
+2018,ISL,Iceland,1.519
+2019,ISL,Iceland,1.462
+2020,ISL,Iceland,1.569
+2021,ISL,Iceland,1.509
+2022,ISL,Iceland,1.597
+2023,ISL,Iceland,1.625
+2007,IRL,Ireland,2.842
+2008,IRL,Ireland,2.575
+2009,IRL,Ireland,2.247
+2010,IRL,Ireland,1.474
+2011,IRL,Ireland,1.587
+2012,IRL,Ireland,1.67
+2013,IRL,Ireland,1.428
+2014,IRL,Ireland,1.541
+2015,IRL,Ireland,1.567
+2016,IRL,Ireland,1.607
+2017,IRL,Ireland,1.565
+2018,IRL,Ireland,1.561
+2019,IRL,Ireland,1.369
+2020,IRL,Ireland,1.181
+2021,IRL,Ireland,1.224
+2022,IRL,Ireland,1.365
+2023,IRL,Ireland,1.596
+2007,ISR,Israel,1.409
+2008,ISR,Israel,1.437
+2009,ISR,Israel,1.297
+2010,ISR,Israel,1.483
+2011,ISR,Israel,1.424
+2012,ISR,Israel,1.413
+2013,ISR,Israel,1.41
+2014,ISR,Israel,1.444
+2015,ISR,Israel,1.475
+2016,ISR,Israel,1.417
+2017,ISR,Israel,1.389
+2018,ISR,Israel,1.357
+2019,ISR,Israel,1.385
+2020,ISR,Israel,1.255
+2021,ISR,Israel,1.31
+2022,ISR,Israel,1.365
+2023,ISR,Israel,1.384
+2007,ITA,Italy,1.704
+2008,ITA,Italy,1.753
+2009,ITA,Italy,1.722
+2010,ITA,Italy,1.752
+2011,ITA,Italy,1.804
+2012,ITA,Italy,1.753
+2013,ITA,Italy,1.9
+2014,ITA,Italy,1.83
+2015,ITA,Italy,1.85
+2016,ITA,Italy,1.87
+2017,ITA,Italy,1.806
+2018,ITA,Italy,1.785
+2019,ITA,Italy,1.875
+2020,ITA,Italy,1.707
+2021,ITA,Italy,1.703
+2022,ITA,Italy,1.66
+2023,ITA,Italy,1.666
+2007,JPN,Japan,3.196
+2008,JPN,Japan,3.041
+2009,JPN,Japan,3.393
+2010,JPN,Japan,2.913
+2011,JPN,Japan,2.948
+2012,JPN,Japan,2.694
+2013,JPN,Japan,2.728
+2014,JPN,Japan,2.906
+2015,JPN,Japan,2.911
+2016,JPN,Japan,2.999
+2017,JPN,Japan,2.967
+2018,JPN,Japan,2.909
+2019,JPN,Japan,2.884
+2020,JPN,Japan,2.682
+2021,JPN,Japan,2.594
+2022,JPN,Japan,2.596
+2023,JPN,Japan,2.781
+2007,LVA,Latvia,2.531
+2008,LVA,Latvia,2.145
+2009,LVA,Latvia,0.285
+2010,LVA,Latvia,0.646
+2011,LVA,Latvia,1.655
+2012,LVA,Latvia,1.872
+2013,LVA,Latvia,1.729
+2014,LVA,Latvia,1.745
+2015,LVA,Latvia,1.706
+2016,LVA,Latvia,1.416
+2017,LVA,Latvia,1.424
+2018,LVA,Latvia,1.472
+2019,LVA,Latvia,1.511
+2020,LVA,Latvia,1.327
+2021,LVA,Latvia,1.253
+2022,LVA,Latvia,1.076
+2023,LVA,Latvia,1.14
+2007,LTU,Lithuania,2.494
+2008,LTU,Lithuania,2.205
+2009,LTU,Lithuania,2.638
+2010,LTU,Lithuania,3.155
+2011,LTU,Lithuania,1.91
+2012,LTU,Lithuania,2.345
+2013,LTU,Lithuania,1.501
+2014,LTU,Lithuania,1.747
+2015,LTU,Lithuania,1.742
+2016,LTU,Lithuania,1.546
+2017,LTU,Lithuania,1.463
+2018,LTU,Lithuania,1.44
+2019,LTU,Lithuania,1.517
+2020,LTU,Lithuania,1.252
+2021,LTU,Lithuania,1.421
+2022,LTU,Lithuania,1.524
+2023,LTU,Lithuania,1.47
+2007,LUX,Luxembourg,1.893
+2008,LUX,Luxembourg,1.953
+2009,LUX,Luxembourg,2.052
+2010,LUX,Luxembourg,1.89
+2011,LUX,Luxembourg,1.851
+2012,LUX,Luxembourg,1.855
+2013,LUX,Luxembourg,1.919
+2014,LUX,Luxembourg,1.923
+2015,LUX,Luxembourg,1.932
+2016,LUX,Luxembourg,1.776
+2017,LUX,Luxembourg,1.978
+2018,LUX,Luxembourg,2.094
+2019,LUX,Luxembourg,2.076
+2020,LUX,Luxembourg,2.216
+2021,LUX,Luxembourg,2.17
+2022,LUX,Luxembourg,2.24
+2023,LUX,Luxembourg,2.351
+2007,NLD,Netherlands,3.564
+2008,NLD,Netherlands,3.5
+2009,NLD,Netherlands,3.535
+2010,NLD,Netherlands,3.293
+2011,NLD,Netherlands,3.268
+2012,NLD,Netherlands,3.198
+2013,NLD,Netherlands,3.234
+2014,NLD,Netherlands,3.035
+2015,NLD,Netherlands,2.956
+2016,NLD,Netherlands,3.142
+2017,NLD,Netherlands,3.129
+2018,NLD,Netherlands,3.198
+2019,NLD,Netherlands,3.188
+2020,NLD,Netherlands,3.068
+2021,NLD,Netherlands,3.06
+2022,NLD,Netherlands,3.204
+2023,NLD,Netherlands,3.416
+2007,NOR,Norway,1.342
+2008,NOR,Norway,1.552
+2009,NOR,Norway,1.762
+2010,NOR,Norway,1.828
+2011,NOR,Norway,1.815
+2012,NOR,Norway,1.778
+2013,NOR,Norway,1.803
+2014,NOR,Norway,1.799
+2015,NOR,Norway,1.798
+2016,NOR,Norway,1.809
+2017,NOR,Norway,1.789
+2018,NOR,Norway,1.803
+2019,NOR,Norway,1.808
+2020,NOR,Norway,1.842
+2021,NOR,Norway,1.946
+2022,NOR,Norway,2.081
+2023,NOR,Norway,2.04
+2007,,OECD countries,1.31
+2008,,OECD countries,1.26
+2009,,OECD countries,1.31
+2010,,OECD countries,1.25
+2011,,OECD countries,1.27
+2012,,OECD countries,1.24
+2013,,OECD countries,1.28
+2014,,OECD countries,1.28
+2015,,OECD countries,1.27
+2016,,OECD countries,1.24
+2017,,OECD countries,1.23
+2018,,OECD countries,1.22
+2019,,OECD countries,1.23
+2020,,OECD countries,1.13
+2021,,OECD countries,1.12
+2022,,OECD countries,1.21
+2023,,OECD countries,1.22
+2007,POL,Poland,1.409
+2008,POL,Poland,1.481
+2009,POL,Poland,1.559
+2010,POL,Poland,1.608
+2011,POL,Poland,1.565
+2012,POL,Poland,1.367
+2013,POL,Poland,1.46
+2014,POL,Poland,1.457
+2015,POL,Poland,1.441
+2016,POL,Poland,1.016
+2017,POL,Poland,0.943
+2018,POL,Poland,1.182
+2019,POL,Poland,1.254
+2020,POL,Poland,1.163
+2021,POL,Poland,1.28
+2022,POL,Poland,1.441
+2023,POL,Poland,1.402
+2007,PRT,Portugal,1.382
+2008,PRT,Portugal,1.434
+2009,PRT,Portugal,1.22
+2010,PRT,Portugal,1.426
+2011,PRT,Portugal,1.422
+2012,PRT,Portugal,1.288
+2013,PRT,Portugal,1.326
+2014,PRT,Portugal,1.151
+2015,PRT,Portugal,1.251
+2016,PRT,Portugal,1.245
+2017,PRT,Portugal,1.333
+2018,PRT,Portugal,1.394
+2019,PRT,Portugal,1.478
+2020,PRT,Portugal,1.406
+2021,PRT,Portugal,1.642
+2022,PRT,Portugal,1.621
+2023,PRT,Portugal,1.783
+2007,ROU,Romania,1.119
+2008,ROU,Romania,1.27
+2009,ROU,Romania,1.385
+2010,ROU,Romania,1.908
+2011,ROU,Romania,2.34
+2012,ROU,Romania,2.188
+2013,ROU,Romania,2.257
+2014,ROU,Romania,2.292
+2015,ROU,Romania,2.673
+2016,ROU,Romania,1.655
+2017,ROU,Romania,1.492
+2018,ROU,Romania,2.089
+2019,ROU,Romania,2.021
+2020,ROU,Romania,1.646
+2021,ROU,Romania,1.783
+2022,ROU,Romania,1.592
+2023,ROU,Romania,1.772
+2007,SVK,Slovakia,2.028
+2008,SVK,Slovakia,2.116
+2009,SVK,Slovakia,2.017
+2010,SVK,Slovakia,1.855
+2011,SVK,Slovakia,1.757
+2012,SVK,Slovakia,1.829
+2013,SVK,Slovakia,2.181
+2014,SVK,Slovakia,1.699
+2015,SVK,Slovakia,2.229
+2016,SVK,Slovakia,1.647
+2017,SVK,Slovakia,1.57
+2018,SVK,Slovakia,2.238
+2019,SVK,Slovakia,1.964
+2020,SVK,Slovakia,1.891
+2021,SVK,Slovakia,1.596
+2022,SVK,Slovakia,1.774
+2023,SVK,Slovakia,1.938
+2007,SVN,Slovenia,1.723
+2008,SVN,Slovenia,1.712
+2009,SVN,Slovenia,1.797
+2010,SVN,Slovenia,1.336
+2011,SVN,Slovenia,1.564
+2012,SVN,Slovenia,1.538
+2013,SVN,Slovenia,1.31
+2014,SVN,Slovenia,1.959
+2015,SVN,Slovenia,2.124
+2016,SVN,Slovenia,1.218
+2017,SVN,Slovenia,1.026
+2018,SVN,Slovenia,1.229
+2019,SVN,Slovenia,1.342
+2020,SVN,Slovenia,1.22
+2021,SVN,Slovenia,1.34
+2022,SVN,Slovenia,1.552
+2023,SVN,Slovenia,2.009
+2007,KOR,South Korea,3.322
+2008,KOR,South Korea,2.965
+2009,KOR,South Korea,3.183
+2010,KOR,South Korea,2.938
+2011,KOR,South Korea,2.817
+2012,KOR,South Korea,2.654
+2013,KOR,South Korea,2.79
+2014,KOR,South Korea,2.897
+2015,KOR,South Korea,2.834
+2016,KOR,South Korea,2.848
+2017,KOR,South Korea,2.907
+2018,KOR,South Korea,2.526
+2019,KOR,South Korea,2.583
+2020,KOR,South Korea,2.892
+2021,KOR,South Korea,3.027
+2022,KOR,South Korea,2.857
+2007,ESP,Spain,2.562
+2008,ESP,Spain,2.376
+2009,ESP,Spain,2.338
+2010,ESP,Spain,2.33
+2011,ESP,Spain,2.112
+2012,ESP,Spain,1.88
+2013,ESP,Spain,1.868
+2014,ESP,Spain,1.98
+2015,ESP,Spain,1.999
+2016,ESP,Spain,2.008
+2017,ESP,Spain,2.068
+2018,ESP,Spain,2.039
+2019,ESP,Spain,2.051
+2020,ESP,Spain,1.859
+2021,ESP,Spain,1.876
+2022,ESP,Spain,2.093
+2023,ESP,Spain,2.15
+2007,SWE,Sweden,0.968
+2008,SWE,Sweden,0.947
+2009,SWE,Sweden,0.917
+2010,SWE,Sweden,0.901
+2011,SWE,Sweden,0.931
+2012,SWE,Sweden,0.931
+2013,SWE,Sweden,0.927
+2014,SWE,Sweden,0.893
+2015,SWE,Sweden,0.867
+2016,SWE,Sweden,0.895
+2017,SWE,Sweden,0.95
+2018,SWE,Sweden,1.004
+2019,SWE,Sweden,1.018
+2020,SWE,Sweden,1.036
+2021,SWE,Sweden,1.111
+2022,SWE,Sweden,1.262
+2023,SWE,Sweden,1.215
+2007,CHE,Switzerland,2.037
+2008,CHE,Switzerland,1.784
+2009,CHE,Switzerland,1.958
+2010,CHE,Switzerland,1.859
+2011,CHE,Switzerland,1.822
+2012,CHE,Switzerland,1.818
+2013,CHE,Switzerland,1.802
+2014,CHE,Switzerland,1.749
+2015,CHE,Switzerland,1.759
+2016,CHE,Switzerland,1.78
+2017,CHE,Switzerland,1.751
+2018,CHE,Switzerland,1.729
+2019,CHE,Switzerland,1.685
+2020,CHE,Switzerland,1.576
+2021,CHE,Switzerland,1.562
+2022,CHE,Switzerland,1.614
+2023,CHE,Switzerland,1.642
+2007,GBR,United Kingdom,2.213
+2008,GBR,United Kingdom,1.923
+2009,GBR,United Kingdom,2.068
+2010,GBR,United Kingdom,2.033
+2011,GBR,United Kingdom,1.918
+2012,GBR,United Kingdom,1.806
+2013,GBR,United Kingdom,1.768
+2014,GBR,United Kingdom,1.862
+2015,GBR,United Kingdom,1.83
+2016,GBR,United Kingdom,1.799
+2017,GBR,United Kingdom,1.743
+2018,GBR,United Kingdom,1.638
+2019,GBR,United Kingdom,1.586
+2020,GBR,United Kingdom,1.37
+2021,GBR,United Kingdom,1.497
+2022,GBR,United Kingdom,1.517
+2023,GBR,United Kingdom,1.547
+2007,USA,United States,0
+2008,USA,United States,0
+2009,USA,United States,0
+2010,USA,United States,0
+2011,USA,United States,0
+2012,USA,United States,0
+2013,USA,United States,0
+2014,USA,United States,0
+2015,USA,United States,0
+2016,USA,United States,0
+2017,USA,United States,0
+2018,USA,United States,0
+2019,USA,United States,0
+2020,USA,United States,0
+2021,USA,United States,0
+2022,USA,United States,0
+2023,USA,United States,0
