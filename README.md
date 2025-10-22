@@ -7,4 +7,4 @@
 | `ft_globalclimatephysicalriskindexgcpri`                           | **Group Mean theo country**                 | Ổn định trong giai đoạn ngắn             |
 | `ft_fossil_fuel`, `ft_government_expenditure_on_education`, `ft_deforestation` | **Iterative Imputer (MICE)** | Có thể dự đoán dựa trên GDP, HDI, forest,... |                              |
 | `ft_tax`, `ft_electriccarssold`, `ft_nonelectriccarsales`, `ft_environmental_protection``ft_cri`                     |  Drop         | Thiếu quá nhiều                        |
-|       
+       
