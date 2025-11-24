@@ -53,6 +53,7 @@ It allows users to explore **CO₂ emission statistics**, visualize trends, perf
 ---
 
 ## 🏗 Project Structure
+```text
 ├── t_main_app.py # Main file (routing + layout)
 ├── tab_dashboard.py # Dashboard tab
 ├── tab_forecast.py # Forecast tab
