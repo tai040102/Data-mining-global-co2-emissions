@@ -54,8 +54,14 @@ It allows users to explore **CO₂ emission statistics**, visualize trends, perf
 
 ## 🏗 Project Structure
 ```text
-├── t_main_app.py # Main file (routing + layout)
-├── tab_dashboard.py # Dashboard tab
-├── tab_forecast.py # Forecast tab
-├── tab_recommendation.py # Recommendation tab
-├── df_continent.csv # Dataset
+Project_CO2/
+├─ Models/
+│   ├─ best_model_gru3.h5
+│   ├─ best_model_gru5.keras
+│   ├─ labelencoder_country.save
+│   └─ scaler_minmax.save
+├─ df_continent.csv
+├─ main_app.py # Main file (routing + layout)
+├─ tab_dashboard.py # Dashboard tab
+├─ tab_forecast.py # Forecast tab
+├─ tab_recommendation.py # Recommendation tab
