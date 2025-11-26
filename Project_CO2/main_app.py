@@ -18,6 +18,9 @@ CUSTOM_CSS = """
 body {
     background-color: #f7fbf8;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    margin: 0;
+    padding: 0 40px 32px 40px;  /* 👈 padding hai bên + phía dưới */
+    box-sizing: border-box;
 }
 .app-title {
     font-size: 28px;
