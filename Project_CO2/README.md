@@ -73,5 +73,5 @@ Project_CO2/
 
 ## Command run web on local 
 ```text
-python -m uvicorn main:app --port 8000 --reload &
-python -m panel serve dashboard.py --port 5006 --autoreload --show
+python -m uvicorn api_forecast:app --port 8000 --reload &
+python -m panel serve main_app.py --port 5006 --autoreload --show
