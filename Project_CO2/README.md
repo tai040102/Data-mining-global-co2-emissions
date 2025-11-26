@@ -36,7 +36,8 @@ It allows users to explore **CO₂ emission statistics**, visualize trends, perf
 
 📸 **Screenshot**
 ![Forecast]
-<img width="1908" height="790" alt="image" src="https://github.com/user-attachments/assets/e12ebf52-d88b-46dd-8de5-cb579d4b4caf" />
+<img width="1795" height="851" alt="image" src="https://github.com/user-attachments/assets/30f0ebe7-c219-4a05-9ad0-35a04a5c2dd8" />
+
 
 ---
 
@@ -48,7 +49,8 @@ It allows users to explore **CO₂ emission statistics**, visualize trends, perf
 
 📸 **Screenshot**
 ![Recommendation]
-<img width="1916" height="711" alt="image" src="https://github.com/user-attachments/assets/57d5c275-4ed4-4fed-a7e9-89e4d0d0a440" />
+<img width="1906" height="467" alt="image" src="https://github.com/user-attachments/assets/69a7d085-6f96-4dbe-bd3a-352a350fd9ed" />
+
 
 ---
 
@@ -67,3 +69,9 @@ Project_CO2/
 ├─ tab_dashboard.py # Dashboard tab
 ├─ tab_forecast.py # Forecast tab
 ├─ tab_recommendation.py # Recommendation tab
+```
+
+## Command run web on local 
+```text
+python -m uvicorn main:app --port 8000 --reload &
+python -m panel serve dashboard.py --port 5006 --autoreload --show
