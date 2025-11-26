@@ -56,10 +56,12 @@ It allows users to explore **CO₂ emission statistics**, visualize trends, perf
 ```text
 Project_CO2/
 ├─ Models/
-│   ├─ best_model_gru3.h5
+│   ├─ best_model_gru3.keras
 │   ├─ best_model_gru5.keras
 │   ├─ labelencoder_country.save
-│   └─ scaler_minmax.save
+│   ├─ scaler_minmax.save
+│   ├─ model_features.pkl
+│   └─ best_xgboost_co2.pkl
 ├─ df_continent.csv
 ├─ main_app.py # Main file (routing + layout)
 ├─ tab_dashboard.py # Dashboard tab

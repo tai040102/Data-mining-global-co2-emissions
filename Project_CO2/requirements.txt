@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+panel
+requests
+bokeh
+numpy
+pandas
