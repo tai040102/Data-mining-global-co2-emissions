@@ -114,52 +114,26 @@ body {
     transform: scale(1.08);
 }
 
-/* ===== Forecast model toggle (GRU / XGBoost) – style chung cho bk-btn-group ===== */
-
-/* khung group */
-.bk-btn-group {
-    display: flex;
-    width: 100%;
-    border-radius: 999px;
-    overflow: hidden;
-    background: transparent;
-    box-shadow: none;
-    border: none;
-    padding: 0;
-    margin: 0;
-}
-
-/* từng nút bên trong */
-.bk-btn-group > .bk-btn {
-    flex: 1 1 0;
-    border-radius: 0;
-    background: #f1f5f9 !important;   /* xám nhạt */
-    color: #374151 !important;
-    border: 1px solid #e5e7eb !important;
-    box-shadow: none !important;
-    font-weight: 500 !important;
-    font-size: 14px !important;
-    padding: 0.6rem 1rem !important;
-    transition: background 0.15s ease, color 0.15s ease !important;
-}
-
-/* hover */
-.bk-btn-group > .bk-btn:hover {
-    background: #e2e8f0 !important;
-    color: #111827 !important;
-}
-
-/* nút đang được chọn */
-.bk-btn-group > .bk-btn.bk-active {
-    background: #16a34a !important;   /* xanh lá đồng bộ nav/slider */
-    border-color: #15803d !important;
+/* ==== Global style cho Panel buttons (Run Prediction) ==== */
+button.bk.bk-btn {
+    background-color: #2fa24f !important;   /* xanh lá */
     color: #ffffff !important;
+    border-radius: 999px !important;
+    padding: 8px 24px !important;
+    font-weight: 600 !important;
+    border: none !important;
     box-shadow: 0 3px 6px rgba(0,0,0,0.15) !important;
+    transition: 0.2s ease-in-out;
 }
 
-/* bỏ outline khi focus */
-.bk-btn-group > .bk-btn:focus {
-    outline: none !important;
+button.bk.bk-btn:hover {
+    background-color: #25833f !important;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.20) !important;
+}
+
+button.bk.bk-btn:active {
+    transform: translateY(0);
     box-shadow: none !important;
 }
 """

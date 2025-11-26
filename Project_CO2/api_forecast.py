@@ -1,7 +1,7 @@
 # api_forecast.py
 from fastapi import FastAPI
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 import os
 
 import numpy as np
@@ -33,22 +33,22 @@ FEATURES_GRU = [
 # ====== PYDANTIC SCHEMAS ======
 class HistoryItem(BaseModel):
     Year: int
-    Co2_MtCO2: float
-    Population: float
-    GDP: float
-    Industry_on_GDP: float
-    Government_Expenditure_on_Education: float
-    Global_Climate_Risk_Index: float
-    HDI: float
-    Renewable_Energy_Percent: float
-    Deforest_Percent: float
-    Energy_Capita_kWh: float
+    Co2_MtCO2: Optional[float] = None
+    Population: Optional[float] = None
+    GDP: Optional[float] = None
+    Industry_on_GDP: Optional[float] = None
+    Government_Expenditure_on_Education: Optional[float] = None
+    Global_Climate_Risk_Index: Optional[float] = None
+    HDI: Optional[float] = None
+    Renewable_Energy_Percent: Optional[float] = None
+    Deforest_Percent: Optional[float] = None
+    Energy_Capita_kWh: Optional[float] = None
 
 
 class PredictRequest(BaseModel):
     country: str
     predict_year: int
-    model_type: str  # "gru" hoặc "xgb"
+    model_type: str = "gru"  # mặc định GRU nếu FE không gửi
     history: List[HistoryItem]
 
 
@@ -151,7 +151,7 @@ def predict_co2(req: PredictRequest):
         return {"status": "error", "message": "History is empty."}
 
     df_hist = df_hist.sort_values("Year")
-    model_type = req.model_type.lower()
+    model_type = (req.model_type or "gru").lower()
 
     try:
         if model_type == "gru":
@@ -161,6 +161,16 @@ def predict_co2(req: PredictRequest):
                 return {
                     "status": "error",
                     "message": f"Missing columns for GRU: {', '.join(missing_cols)}",
+                }
+
+            # nếu có ô trống thì báo user fill
+            if df_hist[FEATURES_GRU].isnull().any().any():
+                return {
+                    "status": "error",
+                    "message": (
+                        "History has missing feature values. "
+                        "Please fill all empty cells before running prediction."
+                    ),
                 }
 
             n_rows = df_hist.shape[0]
