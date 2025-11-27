@@ -28,6 +28,32 @@ def create_dashboard_view(df_all):
         name="", options=countries_by_continent[continents[0]], width=220
     )
 
+    # chọn thêm tối đa 2 quốc gia để vẽ chung
+    compare_countries = pn.widgets.MultiChoice(
+        name="",
+        options=countries_by_continent[continents[0]],
+        value=[],
+        width=220,
+        # placeholder="Select up to 2 countries",
+    )
+
+        # LIMIT MAX = 2 + KHÔNG CHO TRÙNG COUNTRY CHÍNH
+    def on_compare_change(event):
+        vals = list(event.new)
+
+        # bỏ country chính nếu user chọn trùng
+        vals = [c for c in vals if c != country.value]
+
+        # giới hạn tối đa 2
+        if len(vals) > 2:
+            vals = vals[:2]
+
+        # chỉ set lại nếu thực sự thay đổi để tránh loop
+        if vals != compare_countries.value:
+            compare_countries.value = vals
+
+    compare_countries.param.watch(on_compare_change, "value")
+
     period = pn.widgets.IntRangeSlider(
         name="", start=min(years), end=max(years), value=(2010, 2020),
         width=400, show_value=False
@@ -40,15 +66,31 @@ def create_dashboard_view(df_all):
     )
 
     def update_countries(event):
-        country.options = countries_by_continent[continent.value]
+        opts = countries_by_continent[continent.value]
 
-    continent.param.watch(update_countries, "value")
+        # cập nhật LIST cho COUNTRY
+        country.options = opts
+        if country.value not in opts:
+            country.value = opts[0]
+
+        # loại country chính ra khỏi option của compare
+        compare_opts = [c for c in opts if c != country.value]
+
+        # cập nhật options
+        compare_countries.options = compare_opts
+
+        # đồng thời xóa country chính khỏi value nếu có
+        compare_countries.value = [
+            c for c in compare_countries.value if c != country.value
+        ]
+
+    country.param.watch(lambda e: update_countries(None), "value")
 
     def filter_block(label, widget):
         return pn.Column(
             pn.pane.HTML(f'<div class="filter-label">{label}</div>'),
             widget,
-            width=260,
+            width=220,
         )
 
     period_block = pn.Column(
@@ -61,6 +103,7 @@ def create_dashboard_view(df_all):
     filters_row = pn.Row(
         filter_block("CONTINENT", continent),
         filter_block("COUNTRY", country),
+        filter_block("COMPARE (max 2)", compare_countries),
         period_block,
     )
 
@@ -123,53 +166,156 @@ def create_dashboard_view(df_all):
             kpi_card("Energy per Capita (kWh)", energy),
         )
 
-    # bind works OK here (tên params khớp)
     kpi_row = pn.bind(kpi_row_view, country_name=country, period_val=period)
 
-    # ======= CHARTS with @pn.depends =======
-    @pn.depends(country, period)
-    def chart_capita(country, period):
+    # ======= CHARTS: COUNTRY + COMPARE =======
+    colors_capita = ["#10b981", "#6366f1", "#ef4444"]  # main + 2 compare
+    colors_total = ["#065f1f", "#1d4ed8", "#b91c1c"]
+
+    @pn.depends(country, compare_countries, period)
+    def chart_capita(country, compare_countries, period):
         y_min, y_max = period
-        df = df_all[
-            (df_all["Country"] == country)
-            & (df_all["Year"] >= y_min)
-            & (df_all["Year"] <= y_max)
-        ].copy()
-
-        source = ColumnDataSource(df[["Year", "Co2_Capita_tCO2"]])
-
         p = figure(
             height=280,
             sizing_mode="stretch_width",
             tools="pan,wheel_zoom,box_zoom,reset,save",
         )
 
-        p.line("Year", "Co2_Capita_tCO2", source=source, line_width=3, color="#10b981")
-        p.circle("Year", "Co2_Capita_tCO2", source=source, size=6, color="#10b981")
+        all_lines = []
+        all_countries = [country] + [c for c in compare_countries if c != country]
+        all_countries = all_countries[:3]
+
+        for idx, ctry in enumerate(all_countries):
+            df = df_all[
+                (df_all["Country"] == ctry)
+                & (df_all["Year"] >= y_min)
+                & (df_all["Year"] <= y_max)
+            ].copy()
+            if df.empty:
+                continue
+
+            df["Country"] = ctry
+            src = ColumnDataSource(df[["Year", "Co2_Capita_tCO2", "Country"]])
+
+            color = colors_capita[idx % len(colors_capita)]
+            line = p.line(
+                "Year", "Co2_Capita_tCO2",
+                source=src, line_width=3,
+                color=color,
+                legend_label=ctry,
+            )
+            p.circle("Year", "Co2_Capita_tCO2", source=src, size=6, color=color)
+            all_lines.append(line)
 
         p.xaxis.axis_label = "Year"
         p.yaxis.axis_label = "tCO₂ per capita"
 
-        hover = HoverTool(
-            tooltips=[
-                ("Year", "@Year"),
-                ("CO₂ per capita", "@Co2_Capita_tCO2{0.00000} t"),
-            ],
-            mode="vline",
-        )
-        p.add_tools(hover)
+        if all_lines:
+            hover = HoverTool(
+                tooltips=[
+                    ("Country", "@Country"),
+                    ("Year", "@Year"),
+                    ("CO₂ per capita", "@Co2_Capita_tCO2{0.00000} t"),
+                ],
+                mode="vline",
+                renderers=all_lines,
+            )
+            p.add_tools(hover)
+
+        p.legend.location = "top_left"
+        p.legend.click_policy = "hide"
         return p
 
-    @pn.depends(country, period)
-    def chart_total(country, period):
+    @pn.depends(country, compare_countries, period)
+    def chart_total(country, compare_countries, period):
         y_min, y_max = period
-        df = df_all[
-            (df_all["Country"] == country)
-            & (df_all["Year"] >= y_min)
-            & (df_all["Year"] <= y_max)
+        p = figure(
+            height=280,
+            sizing_mode="stretch_width",
+            tools="pan,wheel_zoom,box_zoom,reset,save",
+        )
+
+        all_lines = []
+        all_countries = [country] + [c for c in compare_countries if c != country]
+        all_countries = all_countries[:3]
+
+        for idx, ctry in enumerate(all_countries):
+            df = df_all[
+                (df_all["Country"] == ctry)
+                & (df_all["Year"] >= y_min)
+                & (df_all["Year"] <= y_max)
+            ].copy()
+            if df.empty:
+                continue
+
+            df["Country"] = ctry
+            src = ColumnDataSource(df[["Year", "Co2_MtCO2", "Country"]])
+
+            color = colors_total[idx % len(colors_total)]
+            line = p.line(
+                "Year", "Co2_MtCO2",
+                source=src, line_width=3,
+                color=color,
+                legend_label=ctry,
+            )
+            p.circle("Year", "Co2_MtCO2", source=src, size=6, color=color)
+            all_lines.append(line)
+
+        p.xaxis.axis_label = "Year"
+        p.yaxis.axis_label = "MtCO₂ total"
+
+        if all_lines:
+            hover = HoverTool(
+                tooltips=[
+                    ("Country", "@Country"),
+                    ("Year", "@Year"),
+                    ("Total CO₂", "@Co2_MtCO2{0,0.00} Mt"),
+                ],
+                mode="vline",
+                renderers=all_lines,
+            )
+            p.add_tools(hover)
+
+        p.legend.location = "top_left"
+        p.legend.click_policy = "hide"
+        return p
+
+    charts_row = pn.Row(
+        pn.Column("### CO₂ per Capita (Country)", chart_capita),
+        pn.Column("### Total CO₂ (Country)", chart_total),
+    )
+
+    # ======= GLOBAL vs CONTINENT CHART =======
+    @pn.depends(continent, period)
+    def chart_global_continent(continent, period):
+        y_min, y_max = period
+
+        df_period = df_all[
+            (df_all["Year"] >= y_min) & (df_all["Year"] <= y_max)
         ].copy()
 
-        source = ColumnDataSource(df[["Year", "Co2_MtCO2"]])
+        if df_period.empty:
+            return figure(
+                height=280,
+                sizing_mode="stretch_width",
+                title="No data for selected period",
+            )
+
+        # Global total
+        df_global = (
+            df_period.groupby("Year", as_index=False)["Co2_MtCO2"].sum()
+            .rename(columns={"Co2_MtCO2": "Total"})
+        )
+
+        # Continent total
+        df_cont = (
+            df_period[df_period["Continent"] == continent]
+            .groupby("Year", as_index=False)["Co2_MtCO2"].sum()
+            .rename(columns={"Co2_MtCO2": "Total"})
+        )
+
+        src_global = ColumnDataSource(df_global)
+        src_cont = ColumnDataSource(df_cont)
 
         p = figure(
             height=280,
@@ -177,8 +323,23 @@ def create_dashboard_view(df_all):
             tools="pan,wheel_zoom,box_zoom,reset,save",
         )
 
-        p.line("Year", "Co2_MtCO2", source=source, line_width=3, color="#065f1f")
-        p.circle("Year", "Co2_MtCO2", source=source, size=6, color="#065f1f")
+        r_global = p.line(
+            "Year", "Total",
+            source=src_global,
+            line_width=3,
+            color="#0f766e",
+            legend_label="Global",
+        )
+        p.circle("Year", "Total", source=src_global, size=5, color="#0f766e")
+
+        r_cont = p.line(
+            "Year", "Total",
+            source=src_cont,
+            line_width=3,
+            color="#f97316",
+            legend_label=continent,
+        )
+        p.circle("Year", "Total", source=src_cont, size=5, color="#f97316")
 
         p.xaxis.axis_label = "Year"
         p.yaxis.axis_label = "MtCO₂ total"
@@ -186,16 +347,20 @@ def create_dashboard_view(df_all):
         hover = HoverTool(
             tooltips=[
                 ("Year", "@Year"),
-                ("Total CO₂", "@Co2_MtCO2{0,0.00} Mt"),
+                ("Total CO₂", "@Total{0,0.00} Mt"),
             ],
             mode="vline",
+            renderers=[r_global, r_cont],
         )
         p.add_tools(hover)
+
+        p.legend.location = "top_left"
+        p.legend.click_policy = "hide"
         return p
 
-    charts_row = pn.Row(
-        pn.Column("### CO₂ per Capita", chart_capita),
-        pn.Column("### Total CO₂", chart_total),
+    compare_row = pn.Column(
+        "### Global vs Continent Total CO₂",
+        chart_global_continent,
     )
 
     # ======= FINAL LAYOUT =======
@@ -206,4 +371,6 @@ def create_dashboard_view(df_all):
         kpi_row,
         pn.Spacer(height=20),
         charts_row,
+        pn.Spacer(height=20),
+        compare_row,
     )

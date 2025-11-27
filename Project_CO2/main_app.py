@@ -139,6 +139,32 @@ button.bk.bk-btn:active {
     transform: translateY(0);
     box-shadow: none !important;
 }
+/* STYLE TAGS FOR MULTICHOICE (COMPARE) */
+.bk-tag {
+    background-color: #147a3c !important;   /* xanh lá chủ đạo */
+    color: white !important;
+    border-radius: 6px !important;
+    padding: 4px 8px !important;
+    font-weight: 600 !important;
+    border: none !important;
+}
+
+/* nút X */
+.bk-tag button {
+    color: white !important;
+    font-weight: bold !important;
+}
+
+/* hover hiệu ứng nhẹ */
+.bk-tag:hover {
+    background-color: #0f5f2d !important;
+}
+.choices__list--multiple .choices__item {
+    background-color: #147a3c !important;   /* xanh lá chủ đạo */
+    color: #ffffff !important;
+    border-radius: 10px !important;
+    padding: 3px 8px !important;
+}
 """
 
 pn.extension('tabulator', sizing_mode="stretch_width", raw_css=[CUSTOM_CSS])
