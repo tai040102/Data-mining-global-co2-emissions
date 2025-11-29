@@ -24,87 +24,87 @@ def create_dashboard_view(df_all):
         name="", options=continents, value=continents[0], width=220
     )
 
-    country = pn.widgets.Select(
-        name="", options=countries_by_continent[continents[0]], width=220
-    )
-
-    # chọn thêm tối đa 2 quốc gia để vẽ chung
-    compare_countries = pn.widgets.MultiChoice(
+    # COUNTRY: MultiChoice, chọn tối đa 3 country
+    first_country = countries_by_continent[continents[0]][0]
+    country = pn.widgets.MultiChoice(
         name="",
         options=countries_by_continent[continents[0]],
-        value=[],
-        width=220,
-        # placeholder="Select up to 2 countries",
+        value=[first_country],
+        width=395,
     )
 
-        # LIMIT MAX = 2 + KHÔNG CHO TRÙNG COUNTRY CHÍNH
-    def on_compare_change(event):
-        vals = list(event.new)
+    # limit max = 3 và unique
+    def on_country_change(event):
+        vals = list(dict.fromkeys(event.new))  # unique, keep order
+        if len(vals) > 3:
+            vals = vals[:3]
+        if vals != country.value:
+            country.value = vals
 
-        # bỏ country chính nếu user chọn trùng
-        vals = [c for c in vals if c != country.value]
+    country.param.watch(on_country_change, "value")
 
-        # giới hạn tối đa 2
-        if len(vals) > 2:
-            vals = vals[:2]
-
-        # chỉ set lại nếu thực sự thay đổi để tránh loop
-        if vals != compare_countries.value:
-            compare_countries.value = vals
-
-    compare_countries.param.watch(on_compare_change, "value")
-
+    # Year range slider
     period = pn.widgets.IntRangeSlider(
-        name="", start=min(years), end=max(years), value=(2010, 2020),
-        width=400, show_value=False
+        name="",
+        start=min(years),
+        end=max(years),
+        value=(2010, 2020),
+        show_value=False,
+        sizing_mode="stretch_width",
     )
     period.bar_color = "#33cc7a"
 
+    # period pill
     period_display = pn.bind(
         lambda r: f'<div class="period-pill">{r[0]} → {r[1]}</div>',
-        period
+        period,
     )
 
+    # update COUNTRY options when continent changes
     def update_countries(event):
         opts = countries_by_continent[continent.value]
-
-        # cập nhật LIST cho COUNTRY
         country.options = opts
-        if country.value not in opts:
-            country.value = opts[0]
 
-        # loại country chính ra khỏi option của compare
-        compare_opts = [c for c in opts if c != country.value]
+        # keep only still-valid countries
+        new_vals = [c for c in country.value if c in opts]
 
-        # cập nhật options
-        compare_countries.options = compare_opts
+        # if none left, pick first
+        if not new_vals and opts:
+            new_vals = [opts[0]]
 
-        # đồng thời xóa country chính khỏi value nếu có
-        compare_countries.value = [
-            c for c in compare_countries.value if c != country.value
-        ]
+        # limit to max 3
+        new_vals = new_vals[:3]
+        if new_vals != country.value:
+            country.value = new_vals
 
-    country.param.watch(lambda e: update_countries(None), "value")
+    continent.param.watch(update_countries, "value")
 
-    def filter_block(label, widget):
+    # ======= FILTER LAYOUT =======
+    def filter_block(label, widget, width=220):
         return pn.Column(
             pn.pane.HTML(f'<div class="filter-label">{label}</div>'),
             widget,
-            width=220,
+            width=width,
         )
 
+    # pill + slider in one row so it aligns horizontally
     period_block = pn.Column(
         pn.pane.HTML('<div class="filter-label">PERIOD</div>'),
-        period_display,
-        period,
-        width=260,
+        pn.Row(
+            pn.pane.HTML(period_display, width=140),
+            period,
+            sizing_mode="stretch_width",
+            align="center",
+        ),
+        width=400,
     )
 
     filters_row = pn.Row(
-        filter_block("CONTINENT", continent),
-        filter_block("COUNTRY", country),
-        filter_block("COMPARE (max 2)", compare_countries),
+        filter_block("CONTINENT", continent, width=230),
+        filter_block("COUNTRY (max 3)", country, width=400),
         period_block,
+        sizing_mode="stretch_width",
+        align="end",
     )
 
     # ======= KPI helpers =======
@@ -156,8 +156,13 @@ def create_dashboard_view(df_all):
         """
         return pn.pane.HTML(html, height=100)
 
-    def kpi_row_view(country_name, period_val):
-        total, capita, gdp, hdi, energy = compute_kpis(country_name, period_val)
+    def kpi_row_view(selected_countries, period_val):
+        # Show KPI for first selected country
+        if not selected_countries:
+            return pn.Row()
+
+        main_country = selected_countries[0]
+        total, capita, gdp, hdi, energy = compute_kpis(main_country, period_val)
         return pn.Row(
             kpi_card("Total CO₂", total),
             kpi_card("CO₂ per Capita", capita),
@@ -166,14 +171,14 @@ def create_dashboard_view(df_all):
             kpi_card("Energy per Capita (kWh)", energy),
         )
 
-    kpi_row = pn.bind(kpi_row_view, country_name=country, period_val=period)
+    kpi_row = pn.bind(kpi_row_view, selected_countries=country, period_val=period)
 
-    # ======= CHARTS: COUNTRY + COMPARE =======
-    colors_capita = ["#10b981", "#6366f1", "#ef4444"]  # main + 2 compare
+    # ======= CHARTS: COUNTRY (up to 3) =======
+    colors_capita = ["#10b981", "#6366f1", "#ef4444"]  # up to 3
     colors_total = ["#065f1f", "#1d4ed8", "#b91c1c"]
 
-    @pn.depends(country, compare_countries, period)
-    def chart_capita(country, compare_countries, period):
+    @pn.depends(country, period)
+    def chart_capita(country, period):
         y_min, y_max = period
         p = figure(
             height=280,
@@ -182,10 +187,9 @@ def create_dashboard_view(df_all):
         )
 
         all_lines = []
-        all_countries = [country] + [c for c in compare_countries if c != country]
-        all_countries = all_countries[:3]
+        selected = (country or [])[:3]
 
-        for idx, ctry in enumerate(all_countries):
+        for idx, ctry in enumerate(selected):
             df = df_all[
                 (df_all["Country"] == ctry)
                 & (df_all["Year"] >= y_min)
@@ -199,8 +203,10 @@ def create_dashboard_view(df_all):
 
             color = colors_capita[idx % len(colors_capita)]
             line = p.line(
-                "Year", "Co2_Capita_tCO2",
-                source=src, line_width=3,
+                "Year",
+                "Co2_Capita_tCO2",
+                source=src,
+                line_width=3,
                 color=color,
                 legend_label=ctry,
             )
@@ -226,8 +232,8 @@ def create_dashboard_view(df_all):
         p.legend.click_policy = "hide"
         return p
 
-    @pn.depends(country, compare_countries, period)
-    def chart_total(country, compare_countries, period):
+    @pn.depends(country, period)
+    def chart_total(country, period):
         y_min, y_max = period
         p = figure(
             height=280,
@@ -236,10 +242,9 @@ def create_dashboard_view(df_all):
         )
 
         all_lines = []
-        all_countries = [country] + [c for c in compare_countries if c != country]
-        all_countries = all_countries[:3]
+        selected = (country or [])[:3]
 
-        for idx, ctry in enumerate(all_countries):
+        for idx, ctry in enumerate(selected):
             df = df_all[
                 (df_all["Country"] == ctry)
                 & (df_all["Year"] >= y_min)
@@ -253,8 +258,10 @@ def create_dashboard_view(df_all):
 
             color = colors_total[idx % len(colors_total)]
             line = p.line(
-                "Year", "Co2_MtCO2",
-                source=src, line_width=3,
+                "Year",
+                "Co2_MtCO2",
+                source=src,
+                line_width=3,
                 color=color,
                 legend_label=ctry,
             )
@@ -324,7 +331,8 @@ def create_dashboard_view(df_all):
         )
 
         r_global = p.line(
-            "Year", "Total",
+            "Year",
+            "Total",
             source=src_global,
             line_width=3,
             color="#0f766e",
@@ -333,7 +341,8 @@ def create_dashboard_view(df_all):
         p.circle("Year", "Total", source=src_global, size=5, color="#0f766e")
 
         r_cont = p.line(
-            "Year", "Total",
+            "Year",
+            "Total",
             source=src_cont,
             line_width=3,
             color="#f97316",
