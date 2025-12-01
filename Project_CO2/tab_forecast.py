@@ -25,18 +25,15 @@ def create_forecast_view(df_all: pd.DataFrame):
     countries = sorted(df_all["Country"].dropna().unique())
     years = sorted(df_all["Year"].unique())
 
+    # dataset range (vd 2001–2022)
+    min_year = int(min(years))
+    max_year = int(max(years))
+
     country = pn.widgets.Select(
         name="Country",
         options=countries,
         value=countries[0],
         width=300,
-    )
-
-    hist_window = pn.widgets.Select(
-        name="Historical Data Window",
-        options=["Last 3 years", "Last 5 years"],
-        value="Last 3 years",
-        width=250,
     )
 
     predict_year = pn.widgets.IntInput(
@@ -61,11 +58,17 @@ def create_forecast_view(df_all: pd.DataFrame):
         "Energy_Capita_kWh": None,
     }])
 
+    # Year không có editor, còn lại là number editor
+    editors = {"Year": None}
+    editors.update({f: "number" for f in FEATURES})
+
     editor = pn.widgets.Tabulator(
         df_init,
         height=230,
         show_index=False,
         formatters={"Year": {"type": "plaintext"}},
+        editors=editors,
+        selectable=False,
     )
 
     btn_run = pn.widgets.Button(
@@ -77,15 +80,31 @@ def create_forecast_view(df_all: pd.DataFrame):
     result_box = pn.pane.Markdown("")
     autofill_info = pn.pane.Markdown("", sizing_mode="stretch_width")
 
-    # ================== HELPER: BUILD HISTORY ==================
-    def build_history(country_val, predict_year_val, hist_window_val):
+    # lưu bản "gốc" từ dataset để lock 2001–2022
+    original_df = {"value": df_init.copy()}
+    _updating = {"value": False}  # tránh loop watcher
+
+    # ===== helper: style xám cho các dòng bị khóa =====
+    def apply_locked_style(df_hist: pd.DataFrame):
+        def row_style(row):
+            year = row["Year"]
+            if min_year <= year <= max_year:
+                # tô xám cả dòng
+                return ['background-color: #f2f2f2; color: #555555;'] * len(row)
+            else:
+                return [''] * len(row)
+
+        # gán styler cho tabulator
+        editor.style = df_hist.style.apply(row_style, axis=1)
+
+    # ================== HELPER: BUILD HISTORY (CỐ ĐỊNH 5 NĂM) ==================
+    def build_history(country_val, predict_year_val):
         """
-        Tạo history cố định n năm:
-        - Last 3 years: [Y-3, Y-2, Y-1]
-        - Last 5 years: [Y-5 .. Y-1]
-        Nếu năm nào chưa có trong df_all -> giữ Year, các feature = None.
+        Tạo history cố định 5 năm: [Y-5 .. Y-1]
+        - Năm trong df_all (2001–2022) -> fill dữ liệu.
+        - Năm ngoài range -> để trống feature cho user nhập.
         """
-        n = 3 if "3" in hist_window_val else 5
+        n = 5
 
         df_country = df_all[df_all["Country"] == country_val].copy()
         df_country = df_country.sort_values("Year")
@@ -114,31 +133,75 @@ def create_forecast_view(df_all: pd.DataFrame):
             result_box.object = "⚠️ Predict Year is invalid."
             return
 
-        df_hist = build_history(
-            country.value,
-            py,
-            hist_window.value
-        )
+        df_hist = build_history(country.value, py)
 
+        # cập nhật bản gốc để dùng khi lock
+        original_df["value"] = df_hist.copy()
+
+        # set vào bảng
+        _updating["value"] = True
         editor.value = df_hist
+        _updating["value"] = False
 
-        # đếm số dòng có đủ data (ít nhất 1 feature không null)
+        # áp style xám cho năm trong dataset
+        apply_locked_style(df_hist)
+
+        in_range = (df_hist["Year"] >= min_year) & (df_hist["Year"] <= max_year)
+        locked_years = df_hist.loc[in_range, "Year"].tolist()
+        editable_years = df_hist.loc[~in_range, "Year"].tolist()
+
         has_data = (~df_hist[FEATURES].isnull().all(axis=1)).sum()
         n = df_hist.shape[0]
-        if has_data == 0:
-            autofill_info.object = (
-                f"Auto-filled {n} years (no historical data found for this period). "
-                "All feature cells are empty, please fill them before running prediction."
-            )
-        else:
-            autofill_info.object = (
-                f"Auto-filled {n} years. {has_data} year(s) loaded from dataset, "
-                f"{n - has_data} year(s) are empty placeholders."
-            )
 
-    # watchers
+        # msg = (
+        #     f"Auto-filled last {n} years. {has_data} year(s) loaded from dataset "
+        #     f"({min_year}–{max_year}).\n\n"
+        # )
+        # if locked_years:
+        #     msg += (
+        #         f"- 🔒 Locked years (tô xám, dữ liệu lấy từ dataset, không chỉnh được): "
+        #         f"**{', '.join(map(str, locked_years))}**\n"
+        #     )
+        # if editable_years:
+        #     msg += (
+        #         f"- ✏️ Editable years (ngoài dataset – hãy nhập feature): "
+        #         f"**{', '.join(map(str, editable_years))}**\n"
+        #     )
+
+        # autofill_info.object = msg
+
+    # ================== WATCHER: CHẶN SỬA NĂM 2001–2022 ==================
+    def on_table_change(event):
+        if _updating["value"]:
+            return
+
+        new_df = event.new
+        df_orig = original_df["value"]
+
+        if new_df is None or df_orig is None:
+            return
+        if len(new_df) != len(df_orig):
+            return
+
+        # copy rồi restore lại toàn bộ feature cho các năm nằm trong dataset
+        df_fixed = new_df.copy()
+        lock_mask = (df_fixed["Year"] >= min_year) & (df_fixed["Year"] <= max_year)
+
+        for f in FEATURES:
+            df_fixed.loc[lock_mask, f] = df_orig.loc[lock_mask, f]
+
+        # cập nhật lại vào bảng (cell sẽ nhảy về giá trị gốc => cảm giác bị khóa)
+        _updating["value"] = True
+        editor.value = df_fixed
+        _updating["value"] = False
+
+        # áp lại style xám cho chắc
+        apply_locked_style(df_fixed)
+
+    editor.param.watch(on_table_change, "value")
+
+    # watchers cho widgets
     country.param.watch(autofill_table, "value")
-    hist_window.param.watch(autofill_table, "value")
     predict_year.param.watch(autofill_table, "value")
 
     # initial fill
@@ -151,15 +214,22 @@ def create_forecast_view(df_all: pd.DataFrame):
             result_box.object = "⚠️ No input data."
             return
 
-        if len(df_hist) not in (3, 5):
-            result_box.object = f"⚠️ GRU requires **3 or 5 rows**, got {len(df_hist)}."
+        if len(df_hist) != 5:
+            result_box.object = f"⚠️ GRU requires **5 rows**, got {len(df_hist)}."
             return
 
-        # build payload
+        df_hist = df_hist.copy()
+        df_orig = original_df["value"]
+
+        # đảm bảo thêm một lần nữa: lock 2001–2022
+        lock_mask = (df_hist["Year"] >= min_year) & (df_hist["Year"] <= max_year)
+        for f in FEATURES:
+            df_hist.loc[lock_mask, f] = df_orig.loc[lock_mask, f]
+
         payload = {
             "country": country.value,
             "predict_year": int(predict_year.value),
-            "model_type": "gru",  # dùng GRU time-series
+            "model_type": "gru",
             "history": df_hist.to_dict(orient="records"),
         }
 
@@ -167,7 +237,8 @@ def create_forecast_view(df_all: pd.DataFrame):
             resp = requests.post(API_URL, json=payload, timeout=10)
             data = resp.json()
         except Exception as e:
-            result_box.object = f"❌ API error: {e}"
+            # result_box.object = f"❌ API error: {e}"
+            result_box.object = f"❌ API error: History has missing feature values. Please fill all empty cells before running prediction."
             return
 
         if resp.status_code != 200:
@@ -175,27 +246,23 @@ def create_forecast_view(df_all: pd.DataFrame):
             return
 
         if data.get("status") != "ok":
-            # message từ API (VD: thiếu feature, có ô trống, ...)
             result_box.object = f"❌ API response: {data.get('message')}"
             return
 
         pred = data["prediction"]
 
         result_box.object = (
-            f"### Prediction Result\n"
-            f"- **Country**: {data['country']}\n"
-            f"- **Predict Year**: {data['predict_year']}\n"
-            f"- **Forecast CO₂**: **{pred:,.2f} MtCO₂**"
+            f"The model forecasts that **{data['country']}’s** total CO₂ emissions in {data['predict_year']} will be: <span style='color:#147A3C; font-size:16px; font-weight:800;'>**{pred:,.2f} MtCO₂**</span>\n\n"
         )
 
     btn_run.on_click(run_prediction)
 
     # ================== LAYOUT ==================
     return pn.Column(
-        pn.pane.Markdown("## Forecast CO₂ Emission"),
-        pn.Row(country, hist_window, predict_year),
+        # pn.pane.Markdown("## Forecast CO₂ Emission"),
+        pn.Row(country, predict_year),
         pn.Spacer(height=10),
-        pn.pane.Markdown("### GRU Time-Series Input (Auto-filled)"),
+        pn.pane.Markdown(" <h2 style='color:#147A3C; font-weight:700;'>Input for Prediction</h2>"),
         autofill_info,
         editor,
         pn.Spacer(height=15),
