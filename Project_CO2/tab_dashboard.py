@@ -261,110 +261,117 @@ def create_dashboard_view(df_all):
     )
 
     # ======= PIE CHART HELPERS =======
+    # ======= PIE CHART HELPERS =======
     def make_pie_figure(title, data_dict):
-        # Không lọc bỏ category, chỉ chuẩn hóa lại value
         if not data_dict:
             data_dict = {"N/A": 1.0}
 
         labels = list(data_dict.keys())
-
-        # xử lý None / NaN và đảm bảo không âm
         values = []
         for v in data_dict.values():
-            if v is None or (isinstance(v, float) and pd.isna(v)):
+            try:
+                values.append(max(float(v), 0))
+            except Exception:
                 values.append(0.0)
-            else:
-                try:
-                    values.append(max(float(v), 0.0))
-                except Exception:
-                    values.append(0.0)
 
-        total_val = sum(values)
-
-        # nếu tất cả = 0 thì chia đều để còn legend
-        if total_val == 0:
+        total = sum(values)
+        if total == 0:
             values = [1.0 for _ in values]
-            total_val = float(len(values))
+            total = float(len(values))
 
-        # chuyển sang % ban đầu
-        percents = [v / total_val * 100 for v in values]
+        # chuyển sang %
+        percents = [(v / total) * 100 for v in values]
 
-        # 🔍 đảm bảo lát nào >0 cũng nhìn thấy được (min 3%)
+        # ép lát quá nhỏ cho dễ nhìn (min 3%)
         min_share = 3.0
         if any(p > 0 for p in percents):
-            adjusted = []
+            adj = []
             for p in percents:
-                if p == 0:
-                    adjusted.append(0.0)
-                else:
-                    adjusted.append(max(p, min_share))
-            total_adj = sum(adjusted)
-            percents = [p / total_adj * 100 for p in adjusted]
+                adj.append(max(p, min_share) if p > 0 else 0.0)
+            total_adj = sum(adj)
+            percents = [(p / total_adj) * 100 for p in adj]
 
-        # tính góc từ % sau khi điều chỉnh
-        from math import pi
+        # tính góc
         angles = [p / 100 * 2 * pi for p in percents]
         start_angles, end_angles = [], []
-        cum = 0
+        cur = 0
         for a in angles:
-            start_angles.append(cum)
-            cum += a
-            end_angles.append(cum)
+            start_angles.append(cur)
+            cur += a
+            end_angles.append(cur)
 
-        colors = ["#22c55e", "#a7f3d0", "#0b632b", "#bbf7d0"][: len(labels)]
+        colors = ["#22c55e", "#a7f3d0", "#16a34a", "#bbf7d0"][: len(labels)]
 
         src = ColumnDataSource(
             data=dict(
                 start_angle=start_angles,
                 end_angle=end_angles,
-                value=percents,   # giá trị đang là %
+                value=percents,
                 label=labels,
                 color=colors,
             )
         )
 
+        # chỉ vẽ pie, KHÔNG dùng legend của Bokeh nữa
         p = figure(
-            height=260,
-            width=360,
+            height=280,
+            width=340,
             title=title,
             toolbar_location=None,
             tools="hover",
-            tooltips="@label: @value{0.0}%",   # hiển thị %
+            tooltips="@label: @value{0.0}%",
             match_aspect=True,
         )
 
         p.wedge(
             x=0,
-            y=0,
-            radius=0.7,
+            y=0.15,           # đẩy pie lên một chút
+            radius=0.55,
             start_angle="start_angle",
             end_angle="end_angle",
             line_color="white",
             fill_color="color",
-            legend_field="label",
             source=src,
         )
+
         p.axis.visible = False
         p.grid.visible = False
-        p.legend.location = "bottom_center"
-        p.legend.orientation = "horizontal"
-        return p
+        p.outline_line_color = None
+
+        # ==== legend tự build bằng HTML đặt DƯỚI figure ====
+        legend_items = []
+        for lbl, col in zip(labels, colors):
+            legend_items.append(
+                f"""
+                <span class="pie-legend-item">
+                    <span class="pie-legend-color" style="background:{col};"></span>
+                    <span class="pie-legend-label">{lbl}</span>
+                </span>
+                """
+            )
+        legend_html = (
+            '<div class="pie-legend">'
+            + "".join(legend_items)
+            + "</div>"
+        )
+
+        legend_pane = pn.pane.HTML(legend_html, height=30)
+
+        # trả về 1 Column: pie + legend
+        return pn.Column(p, legend_pane)
 
     # ======= PIE: GDP Allocation by Sector (Industry vs Others) =======
     @pn.depends(continent, country, period)
     def pie_gdp(continent, country, period):
         df_scope = get_scope_df(continent, country, period)
         if df_scope.empty:
-            return figure(height=260, width=360, title="GDP Allocation by Sector")
+            return make_pie_figure("GDP Allocation by Sector", {"N/A": 1})
 
         ind = df_scope["Industry_on_GDP"].mean() if "Industry_on_GDP" in df_scope else 0.0
         ind = max(min(ind, 100.0), 0.0)
         others = max(100.0 - ind, 0.0)
 
-        data = {
-            "Industry": ind,
-            "Others": others,
-        }
+        data = {"Industry": ind, "Others": others}
         return make_pie_figure("GDP Allocation by Sector", data)
 
     # ======= PIE: Energy Sources (Renewable vs Non-renewable) =======
@@ -372,47 +379,40 @@ def create_dashboard_view(df_all):
     def pie_energy(continent, country, period):
         df_scope = get_scope_df(continent, country, period)
         if df_scope.empty:
-            return figure(height=260, width=360, title="Distribution of Energy Sources")
+            return make_pie_figure("Distribution of Energy Sources", {"N/A": 1})
 
         ren = df_scope["Renewable_Energy_Percent"].mean() if "Renewable_Energy_Percent" in df_scope else 0.0
         ren = max(min(ren, 100.0), 0.0)
         non_ren = max(100.0 - ren, 0.0)
 
-        data = {
-            "Renewable": ren,
-            "Non-renewable": non_ren,
-        }
+        data = {"Renewable": ren, "Non-renewable": non_ren}
         return make_pie_figure("Distribution of Energy Sources", data)
 
-    # ======= PIE: Land Area (Deforest, Forest, Others) =======
-    @pn.depends(continent, country, period)
+    # ======= PIE: Land Area (Deforest, Forest, Total Area) =======
     @pn.depends(continent, country, period)
     def pie_land(continent, country, period):
         df_scope = get_scope_df(continent, country, period)
         if df_scope.empty:
-            return figure(height=260, width=360, title="Land Composition")
+            return make_pie_figure("Distribution of Total Land Area", {"N/A": 1})
 
-        # Lấy tổng 3 giá trị (GLOBAL hoặc MULTI-COUNTRY)
         deforest = df_scope["Deforest_Area_ha"].sum() if "Deforest_Area_ha" in df_scope else 0
         forest   = df_scope["Forest_Area_ha"].sum() if "Forest_Area_ha" in df_scope else 0
         total    = df_scope["Area_ha"].sum() if "Area_ha" in df_scope else 0
 
-        # Fix giá trị âm hoặc NaN
         def safe(x):
-            if x is None or pd.isna(x): return 0
-            return max(float(x), 0)
+            if x is None or pd.isna(x):
+                return 0.0
+            return max(float(x), 0.0)
 
         deforest = safe(deforest)
         forest   = safe(forest)
         total    = safe(total)
 
-        # Tránh tình trạng pie bị toàn “Total” quá lớn → vẫn chuyển sang %
         data = {
             "Deforested": deforest,
             "Forest": forest,
             "Total Area": total,
         }
-
         return make_pie_figure("Distribution of Total Land Area", data)
 
     pie_row = pn.Row(

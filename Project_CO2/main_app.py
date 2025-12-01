@@ -165,6 +165,30 @@ button.bk.bk-btn:active {
     border-radius: 10px !important;
     padding: 3px 8px !important;
 }
+.pie-legend {
+    display: inline-flex;
+    gap: 16px;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 0 0 6px rgba(0,0,0,0.04);
+    margin-top: 4px;
+}
+
+.pie-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+}
+
+.pie-legend-color {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    display: inline-block;
+}
 """
 
 pn.extension('tabulator', sizing_mode="stretch_width", raw_css=[CUSTOM_CSS])
