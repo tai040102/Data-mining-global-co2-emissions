@@ -73,7 +73,7 @@ def _predict_gru_5y(country: str, df_hist: pd.DataFrame) -> float:
     Scenario 1:
     - Dùng 5 năm lịch sử (time-series).
     - Áp dụng log1p -> scaler_quantile -> GRU -> inverse_transform -> expm1
-    giống hàm predict_co2 trong main.py.
+      giống hàm predict_co2 trong main.py.
     """
 
     # Sort theo Year và chắc chắn chỉ lấy đúng 5 năm gần nhất
@@ -81,9 +81,6 @@ def _predict_gru_5y(country: str, df_hist: pd.DataFrame) -> float:
 
     # Lấy đúng 10 feature theo đúng thứ tự
     seq_df = df_hist[FEATURES_GRU].copy()
-
-    # Số feature (F)
-    num_feature = seq_df.shape[1]
 
     # log1p giống main.py
     seq_df_log = np.log1p(seq_df)
@@ -94,7 +91,6 @@ def _predict_gru_5y(country: str, df_hist: pd.DataFrame) -> float:
 
     # encode country
     if country not in labelencoder_country.classes_:
-        # Trong main.py bạn fallback về 0, ở API mình báo lỗi rõ ràng
         raise ValueError(f"Country '{country}' not in label encoder.")
 
     country_code = labelencoder_country.transform([country])[0]
@@ -104,6 +100,7 @@ def _predict_gru_5y(country: str, df_hist: pd.DataFrame) -> float:
     y_pred_scaled = model_gru5.predict([X_new, X_country], verbose=0)  # (1,1)
 
     # inverse scale: ghép y_pred_scaled + zeros rồi inverse_transform
+    num_feature = len(FEATURES_GRU)
     padded = np.concatenate(
         [y_pred_scaled, np.zeros((1, num_feature - 1))],
         axis=1,
@@ -113,6 +110,7 @@ def _predict_gru_5y(country: str, df_hist: pd.DataFrame) -> float:
     # expm1 để quay lại scale ban đầu
     y_pred_real = np.expm1(y_pred_real_log)
 
+    # ép về float để tránh kiểu numpy scalar
     return float(y_pred_real)
 
 
@@ -167,7 +165,19 @@ def predict_co2(req: PredictRequest):
     # ===== Chạy Scenario 1 – GRU 5 years =====
     try:
         pred = _predict_gru_5y(req.country, df_hist)
+
+        # 🔴 chặn NaN / Inf để không trả về giá trị JSON không hợp lệ
+        if np.isnan(pred) or np.isinf(pred):
+            return {
+                "status": "error",
+                "message": (
+                    "Model returned an invalid value (NaN or Inf). "
+                    "Please double-check your input features."
+                ),
+            }
+
     except Exception as e:
+        # mọi lỗi khác đều trả về dạng text bình thường
         return {"status": "error", "message": str(e)}
 
     return {

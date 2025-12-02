@@ -214,8 +214,21 @@ def create_forecast_view(df_all: pd.DataFrame):
             result_box.object = "⚠️ No input data."
             return
 
-        if len(df_hist) != 5:
-            result_box.object = f"⚠️ GRU requires **5 rows**, got {len(df_hist)}."
+        n_rows = len(df_hist)
+        if n_rows != 5:
+            missing = 5 - n_rows
+            if missing > 0:
+                result_box.object = (
+                    f"⚠️ History table just have **{n_rows} rows**, "
+                    f"needs exactly **5 rows** (5 consecutive years).\n\n"
+                    f"👉 Please **add the missing {missing} rows** and fill in all features "
+                    "before running the prediction."
+                )
+            else:
+                result_box.object = (
+                    f"⚠️ History table has **{n_rows} rows**, but GRU requires **exactly 5 rows**.\n\n"
+                    "👉 Please keep exactly 5 consecutive years of history before running the prediction."
+                )
             return
 
         df_hist = df_hist.copy()
@@ -226,6 +239,16 @@ def create_forecast_view(df_all: pd.DataFrame):
         for f in FEATURES:
             df_hist.loc[lock_mask, f] = df_orig.loc[lock_mask, f]
 
+        # --- FE tự check thiếu ô trống trước khi gọi API ---
+        if df_hist[FEATURES].isnull().any().any():
+            years_nan = df_hist.loc[df_hist[FEATURES].isnull().any(axis=1), "Year"].tolist()
+            year_list = ", ".join(str(int(y)) for y in years_nan)
+            result_box.object = (
+                f"⚠️ Some feature cells are empty for year(s): **{year_list}**.\n\n"
+                "👉 Please fill **all features** for these year(s) before running the prediction."
+            )
+            return
+
         payload = {
             "country": country.value,
             "predict_year": int(predict_year.value),
@@ -235,11 +258,20 @@ def create_forecast_view(df_all: pd.DataFrame):
 
         try:
             resp = requests.post(API_URL, json=payload, timeout=10)
+        except Exception as e:
+            result_box.object = f"❌ API call error: {e}"
+            return
+
+        # parse JSON, nếu lỗi thì show raw text để dễ nhìn
+        try:
             data = resp.json()
         except Exception as e:
-            # result_box.object = f"❌ API error: {e}"
-            result_box.object = f"❌ API error: History has missing feature values. Please fill all empty cells before running prediction."
+            result_box.object = (
+                f"❌ API JSON parse error: {e}\n\n"
+                f"Raw response:\n\n```text\n{resp.text}\n```"
+            )
             return
+
 
         if resp.status_code != 200:
             result_box.object = f"❌ API HTTP {resp.status_code}: {data}"
