@@ -189,6 +189,187 @@ button.bk.bk-btn:active {
     border-radius: 2px;
     display: inline-block;
 }
+
+/* ======================= RECOMMENDATION TAB ======================= */
+
+/* header "Recommendation Engine" */
+.rec-header {
+    font-size: 20px;
+    font-weight: 700;
+    color: #147a3c;
+    margin-bottom: 0.5rem;
+}
+
+/* hàng country / year / target */
+.rec-top-row {
+    margin-top: 4px;
+    margin-bottom: 10px;
+    align-items: flex-end;
+}
+
+/* hộp select và input phía trên */
+.rec-select .bk-input,
+.rec-target-input .bk-input {
+    border-radius: 999px !important;
+    border: 1px solid #d1d5db !important;
+    box-shadow: none !important;
+    padding: 4px 12px !important;
+    font-size: 13px !important;
+    min-width: 150px;
+}
+.rec-target-input .bk-input input {
+    text-align: center;
+    font-weight: 600;
+}
+
+/* panel trái */
+.rec-left-panel {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 18px 20px 20px 20px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.03);
+}
+
+/* layout chính của tab */
+.rec-main-row {
+    margin-top: 10px;
+    align-items: flex-start;
+}
+
+/* header của bảng feature */
+.rec-feature-header {
+    background: #e6f7ed;
+    border-radius: 12px 12px 0 0;
+    padding: 8px 10px;
+    border: 1px solid #cdebd8;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* grid chứa các dòng feature */
+.rec-feature-grid {
+    background: #f7fbf8;
+    border-radius: 0 0 12px 12px;
+    padding: 6px 10px 10px 10px;
+    border: 1px solid #cdebd8;
+    border-top: none;
+    font-size: 13px;
+}
+
+/* căn lại checkbox trong bảng */
+.rec-feature-grid .bk-checkbox {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ô data 2025 / 2026 */
+.rec-data-cell .bk-input {
+    border-radius: 999px !important;
+    border: 1px solid #d1d5db !important;
+    padding: 2px 10px !important;
+    font-size: 12px !important;
+    height: 30px;
+}
+
+/* slider giảm / tăng trong bảng đã được global .bk-slider style */
+
+/* khối Recommend bên dưới bảng */
+.rec-recommend-block {
+    margin-top: 8px;
+}
+
+/* text kết quả Recommend */
+.rec-result-text {
+    font-size: 13px;
+}
+.rec-result-text ul {
+    margin-top: 4px;
+}
+
+/* card bên phải: Predict CO2 */
+.rec-predict-card {
+    background: #f3fbf6 !important;
+    border-radius: 18px !important;
+    border: 1px solid #d4ecdd !important;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.03) !important;
+    padding: 16px !important;
+}
+
+/* input trong Predict card */
+.rec-predict-input .bk-input {
+    border-radius: 999px !important;
+    border: 1px solid #d1d5db !important;
+    padding: 3px 12px !important;
+    font-size: 13px !important;
+    margin-bottom: 6px;
+}
+
+/* kết quả Predict */
+.rec-predict-result {
+    font-size: 13px;
+    text-align: center;
+    color: #374151;
+}
+.rec-predict-result h3 {
+    color: #147a3c;
+}
+
+/* nút Recommend / Predict (đã có style chung, chỉ căn giữa) */
+.rec-recommend-btn,
+.rec-predict-btn {
+    margin-top: 8px;
+}
+.rec-feature-name {
+    white-space: nowrap;
+    font-weight: 500;
+}
+.rec-left-panel {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 18px 20px 20px 20px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.03);
+    overflow-x: auto;   /* tránh tràn ngang */
+}
+
+/* ===== Recommendation table dùng CSS grid cho các hàng ===== */
+
+.rec-table {
+    background: #f7fbf8;
+    border-radius: 12px;
+    padding: 10px 16px 14px 16px;
+    border: 1px solid #cdebd8;
+}
+
+/* 6 cột: checkbox | feature | data prev | slider dec | slider inc | data curr */
+.rec-row {
+    display: grid;
+    grid-template-columns: 30px minmax(160px, 2fr) 120px minmax(180px, 3fr) minmax(180px, 3fr) 120px;
+    column-gap: 16px;
+    align-items: center;
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+
+.rec-row-header {
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.rec-feature-name {
+    white-space: nowrap;
+}
+
+/* số data bên trái/phải */
+.rec-data-cell {
+    text-align: right;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 """
 
 pn.extension('tabulator', sizing_mode="stretch_width", raw_css=[CUSTOM_CSS])
@@ -226,7 +407,7 @@ def router(search):
     if page == "forecast":
         return create_forecast_view(df_all)
     elif page == "recommend":
-        return create_recommendation_view()
+        return create_recommendation_view(df_all)
     else:
         return create_dashboard_view(df_all)
 
