@@ -96,12 +96,13 @@ def create_recommendation_view(df_all: pd.DataFrame):
     )
 
     # ========== TABLE HEADER (1 row) ==========
-    header_prev = pn.pane.Markdown("**Data (Year-1)**")
-    header_curr = pn.pane.Markdown("**Data (Year)**")
+
+    header_prev = pn.pane.Markdown("**Data (Year-1)**", css_classes=["rec-data-cell"])
+    header_curr = pn.pane.Markdown("**Data (Year)**", css_classes=["rec-data-cell"])
 
     header_row = pn.Row(
         pn.Spacer(),  # checkbox
-        pn.pane.Markdown("**Feature**"),
+        pn.pane.Markdown("**Feature**", css_classes=["rec-feature-name"]),
         header_prev,
         pn.pane.Markdown("**Max reduction rate**"),
         pn.pane.Markdown("**Max increase rate**"),
@@ -111,14 +112,15 @@ def create_recommendation_view(df_all: pd.DataFrame):
     )
 
     # ========== TABLE BODY (1 row / feature) ==========
+
     feature_controls = []
     body_rows = []
 
     for feat in FEATURES:
         cb = pn.widgets.Checkbox(value=False)
 
-        data_prev = pn.widgets.StaticText(
-            value="0",
+        data_prev = pn.pane.Markdown(
+            "0",
             css_classes=["rec-data-cell"],
         )
 
@@ -140,9 +142,10 @@ def create_recommendation_view(df_all: pd.DataFrame):
             bar_color="#22c55e",
         )
 
-        data_curr = pn.widgets.StaticText(
-            value="0",
-            css_classes=["rec-data-cell"],
+        # cột Data (Year) dùng input HTML để không phá layout
+        data_curr = pn.pane.HTML(
+            '<input type="number" class="rec-num-input" value="0" />',
+            css_classes=["rec-data-curr"],
         )
 
         feature_controls.append(
@@ -158,7 +161,10 @@ def create_recommendation_view(df_all: pd.DataFrame):
 
         row = pn.Row(
             cb,
-            pn.pane.Markdown(_pretty_name(feat)),
+            pn.pane.Markdown(
+                _pretty_name(feat),
+                css_classes=["rec-feature-name"],
+            ),
             data_prev,
             max_reduce,
             max_increase,
@@ -175,40 +181,49 @@ def create_recommendation_view(df_all: pd.DataFrame):
         sizing_mode="stretch_width",
     )
 
-    # ========== UPDATE DATA & HEADER THEO YEAR ==========
+    # ========== UPDATE DATA THEO COUNTRY & YEAR ==========
     def update_feature_values(event=None):
         ui_year = int(year_sel.value)
 
-        # dataset_year hiện tại = min(ui_year, max_base_year)
-        # ví dụ chọn 2023 vẫn dùng dữ liệu 2022
-        dataset_curr = min(ui_year, max_base_year)
-        dataset_prev = dataset_curr - 1
+        # Label hiển thị đúng
+        header_prev.object = f"**Data {ui_year - 1}**"
+        header_curr.object = f"**Data {ui_year}**"
 
-        header_prev.object = f"**Data {dataset_prev}**"
-        header_curr.object = f"**Data {dataset_curr}**"
+        prev_year = ui_year - 1
+        curr_year = ui_year
 
         df_country = df_all[df_all["Country"] == country_sel.value]
-        row_curr = df_country[df_country["Year"] == dataset_curr]
-        row_prev = df_country[df_country["Year"] == dataset_prev]
+
+        row_prev = df_country[df_country["Year"] == prev_year]
+        row_curr = df_country[df_country["Year"] == curr_year]
 
         for fc in feature_controls:
             col = fc["name"]
 
+            # -------- Data (Year-1): chỉ hiển thị --------
             if not row_prev.empty and col in row_prev.columns:
                 v_prev = row_prev.iloc[0][col]
             else:
                 v_prev = 0
+            v_prev = 0 if pd.isna(v_prev) else v_prev
+            fc["data_prev"].object = _fmt_value(v_prev)
 
+            # -------- Data (Year): nếu không có dữ liệu -> 0 --------
             if not row_curr.empty and col in row_curr.columns:
                 v_curr = row_curr.iloc[0][col]
+                v_curr = 0 if pd.isna(v_curr) else v_curr
             else:
-                v_curr = v_prev
+                v_curr = 0
 
-            v_prev = 0 if pd.isna(v_prev) else v_prev
-            v_curr = 0 if pd.isna(v_curr) else v_curr
+            # giá trị đưa vào thuộc tính value của input -> KHÔNG format comma
+            try:
+                raw_val = float(v_curr)
+            except Exception:
+                raw_val = 0.0
 
-            fc["data_prev"].value = _fmt_value(v_prev)
-            fc["data_curr"].value = _fmt_value(v_curr)
+            fc["data_curr"].object = (
+                f'<input type="number" class="rec-num-input" value="{raw_val}" />'
+            )
 
     country_sel.param.watch(update_feature_values, "value")
     year_sel.param.watch(update_feature_values, "value")
@@ -238,16 +253,20 @@ def create_recommendation_view(df_all: pd.DataFrame):
             return
 
         lines = [
-            f"To achieve a CO₂ emission level of **{target:.0f} MtCO₂**,",
+            f"To achieve a CO₂ emission level of <span style='color:#147a3c; font-weight:700'>{target:.0f} MtCO₂</span>,",
             "the model indicates that the following features need to be adjusted:",
         ]
         for fc in selected:
             name = _pretty_name(fc["name"])
             dec = fc["max_reduce"].value
             inc = fc["max_increase"].value
+            red = f"<span style='color:#ef4444'>{dec:.0f}%</span>"
+            green = f"<span style='color:#22c55e'>+{inc:.0f}%</span>"
+
             lines.append(
-                f"- **{name}**: between `{dec:.0f}%` reduction and `+{inc:.0f}%` increase"
+                f"- **{name}**: between {red} reduction and {green} increase"
             )
+
 
         recommend_text.object = "\n".join(lines)
 
@@ -286,16 +305,16 @@ def create_recommendation_view(df_all: pd.DataFrame):
 
     def run_predict(event):
         total = sum(widget.value for widget in predict_inputs.values())
+
         predict_result.object = (
-            "The predicted total CO₂ emissions is:\n\n"
-            f"### **{total/100:.1f} MtCO₂**"
+            "The predicted total CO₂ emissions is:<br><br>"
+            f"<span style='color:#147a3c; font-size:22px; font-weight:700'>{total/100:.1f} MtCO₂</span>"
         )
 
     btn_predict.on_click(run_predict)
 
     predict_card = pn.Card(
         pn.Column(
-            # pn.pane.Markdown("### Predict CO₂", margin=(0, 0, 15, 0)),
             *predict_inputs.values(),
             pn.Spacer(height=15),
             pn.Row(pn.Spacer(), btn_predict, pn.Spacer()),
@@ -306,7 +325,7 @@ def create_recommendation_view(df_all: pd.DataFrame):
         collapsible=False,
         css_classes=["rec-predict-card"],
         sizing_mode="fixed",
-        width=350,
+        width=330,
     )
 
     # ========== FINAL LAYOUT ==========
@@ -320,6 +339,7 @@ def create_recommendation_view(df_all: pd.DataFrame):
         recommend_block,
         sizing_mode="stretch_width",
         css_classes=["rec-left-panel"],
+        width=900,
     )
 
     layout = pn.Row(

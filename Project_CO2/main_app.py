@@ -370,6 +370,38 @@ button.bk.bk-btn:active {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+.rec-data-cell {
+    width: 120px;          /* khớp DATA_W */
+    text-align: right;
+    padding-right: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* căn phải số trong FloatInput ở cột Data 2023 */
+.bk-input.rec-data-edit input,
+.rec-data-edit input {
+    text-align: right;
+}
+/* input number cho cột Data (Year) */
+.rec-num-input {
+    width: 100%;
+    max-width: 100px;      /* vừa với cột cuối trong grid */
+    height: 32px;
+    padding: 4px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 13px;
+    text-align: right;
+    box-sizing: border-box;
+}
+
+/* ô chứa input ở cột cuối */
+.rec-data-curr {
+    display: flex;
+    justify-content: flex-end;
+}
 """
 
 pn.extension('tabulator', sizing_mode="stretch_width", raw_css=[CUSTOM_CSS])
