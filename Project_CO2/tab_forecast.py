@@ -3,7 +3,7 @@ import panel as pn
 import pandas as pd
 import requests
 
-API_URL = "http://localhost:8000/predict"
+API_URL = "http://localhost:8001/predict"
 
 FEATURES = [
     "Co2_MtCO2",

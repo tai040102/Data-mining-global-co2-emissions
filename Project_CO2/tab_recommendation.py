@@ -1,6 +1,19 @@
 # tab_recommendation.py
 import panel as pn
 import pandas as pd
+import joblib
+import numpy as np
+from es_optimizer import es_optimize_changes
+
+import requests
+
+API_XGB = "http://localhost:8002/predict_xgboost"
+LOCAL_MODEL_XG_PATH = "Models/Model_XGBoost.joblib"
+LOCAL_FEATURES_XG_PATH = "Models/model_features.joblib"
+
+
+API_RECOMMEND = "http://localhost:8003/recommend"
+
 
 FEATURES = [
     "Population",
@@ -88,7 +101,7 @@ def create_recommendation_view(df_all: pd.DataFrame):
         ),
         pn.Spacer(width=30),
         pn.Column(
-            pn.pane.Markdown("🎯 **CO₂ Emission Target**", margin=(0, 0, 2, 0)),
+            pn.pane.Markdown(" **CO₂ Emission Target**", margin=(0, 0, 2, 0)),
             co2_target,
         ),
         sizing_mode="stretch_width",
@@ -251,24 +264,71 @@ def create_recommendation_view(df_all: pd.DataFrame):
                 "Please select at least **one feature** to adjust."
             )
             return
-
+        base_values = {}
+        for fc in feature_controls:
+            raw_html = fc["data_curr"].object
+            val_str = raw_html.split('value="')[1].split('"')[0]
+            base_values[fc["name"]] = float(val_str)
+        selected_features = []
+        #base_values["Co2_MtCO2"] = float(target)
+        for fc in selected:
+            feat = fc["name"]
+            min_pct = fc["max_reduce"].value
+            max_pct = fc["max_increase"].value
+            selected_features.append({
+                "feature": feat,
+                "min_pct": min_pct,
+                "max_pct": max_pct
+            })
+        payload = {
+            "country": country_sel.value,
+            "year": int(year_sel.value),
+            "target": float(target),
+            "base_values": base_values,
+            "selected_features": selected_features
+        }
+        recommend_text.object = "Running optimization… please wait."
+        
+        try:
+            resp = requests.post(API_RECOMMEND, json=payload, timeout=20)
+            data = resp.json()
+        except Exception as e:
+            recommend_text.object = f"❌ API call failed: {e}"
+            return
+        if resp.status_code != 200 or data.get("status") != "ok":
+            recommend_text.object = f"❌ API error: {data}"
+            return
+        best_change = data["best_change_pct"]
+        best_pred = data["predicted_co2"]
+        fitness = data["fitness"]
+        
         lines = [
             f"To achieve a CO₂ emission level of <span style='color:#147a3c; font-weight:700'>{target:.0f} MtCO₂</span>,",
             "the model indicates that the following features need to be adjusted:",
         ]
-        for fc in selected:
-            name = _pretty_name(fc["name"])
-            dec = fc["max_reduce"].value
-            inc = fc["max_increase"].value
-            red = f"<span style='color:#ef4444'>{dec:.0f}%</span>"
-            green = f"<span style='color:#22c55e'>+{inc:.0f}%</span>"
+        
+        for feat, pct in best_change.items():
+            color = "#22c55e" if pct >= 0 else "#ef4444"
+            lines.append(f"- **{_pretty_name(feat)}**: "
+                     f"<span style='color:{color}; font-weight:700'>{pct:.2f}%</span>")
 
-            lines.append(
-                f"- **{name}**: between {red} reduction and {green} increase"
-            )
-
+        lines.append("")
 
         recommend_text.object = "\n".join(lines)
+        
+        # for fc in selected:
+        #     name = _pretty_name(fc["name"])
+        #     dec = fc["max_reduce"].value
+        #     inc = fc["max_increase"].value
+        #     red = f"<span style='color:#ef4444'>{dec:.0f}%</span>"
+        #     green = f"<span style='color:#22c55e'>+{inc:.0f}%</span>"
+
+        #     lines.append(
+        #         f"- **{name}**: between {red} reduction and {green} increase"
+        #     )
+
+
+        # recommend_text.object = "\n".join(lines)
 
     btn_recommend.on_click(run_recommend)
 
@@ -280,6 +340,20 @@ def create_recommendation_view(df_all: pd.DataFrame):
     )
 
     # ========== RIGHT CARD: PREDICT CO2 ==========
+    _local_model  = None
+    _local_feature_names  = None
+    _local_load_error  = None
+    try:
+        _local_model  = joblib.load(LOCAL_MODEL_XG_PATH)
+        _local_feature_names  = joblib.load(LOCAL_FEATURES_XG_PATH)
+        # đảm bảo là list
+        if not isinstance(_local_feature_names, (list, tuple)):
+            _local_feature_names  = list(_local_feature_names)
+    except FileNotFoundError as e:
+        _local_load_error  = f"Không tìm thấy file model/feature: {e.filename}"
+    except Exception as e:
+        _local_load_error  = f"Lỗi khi load model: {str(e)}"
+    
     predict_inputs = {
         feat: pn.widgets.FloatInput(
             name=_pretty_name(feat),
@@ -304,12 +378,66 @@ def create_recommendation_view(df_all: pd.DataFrame):
     )
 
     def run_predict(event):
-        total = sum(widget.value for widget in predict_inputs.values())
+        features_dict  = {}
+        for feat in FEATURES:
+            val = predict_inputs[feat].value
+            features_dict[feat] = 0.0 if val is None else float(val)
+        payload = {
+            "country": country_sel.value,
+            "features": features_dict,
+        }
+        try:
+            predict_result.object = "Calling XGBoost API..."
+            resp = requests.post(API_XGB, json=payload, timeout=8)
+            if resp.status_code != 200:
+                try:
+                    error_text = resp.json()
+                except Exception:
+                    error_text = resp.text
+                predict_result.object = f"❌ API Error {resp.status_code}: {error_text}"
+                # fallback to local if available
+            else:
+                data = resp.json()
+                if data.get("status") == "ok" and "prediction" in data:
+                    pred_val = float(data["prediction"])
+                    predict_result.object = (
+                        "The predicted CO₂ emissions is:<br><br>"
+                        f"<span style='color:#147a3c; font-size:22px; font-weight:700'>{pred_val:,.2f} MtCO₂</span>"
+                    )
+                    return
+                else:
+                    predict_result.object = f"❌ API response error: {data}"
+        except Exception as e:
+            # network / connection error -> fallback to local
+            predict_result.object = f"⚠️ API call failed: {e}"
 
-        predict_result.object = (
-            "The predicted total CO₂ emissions is:<br><br>"
-            f"<span style='color:#147a3c; font-size:22px; font-weight:700'>{total/100:.1f} MtCO₂</span>"
-        )
+        # If reached here, try local fallback if possible
+        if _local_model is None:
+            predict_result.object = predict_result.object + "\n\n❌ No local model available for fallback."
+            return
+        
+        try:    
+            input_df = pd.DataFrame([features_dict])
+            missing_in_input = [c for c in _local_feature_names  if c not in input_df.columns]
+            extra_in_input = [c for c in input_df.columns if c not in _local_feature_names ]
+            if missing_in_input:
+                for c in missing_in_input:
+                    input_df[c] = 0.0
+            input_df = input_df[_local_feature_names ]
+            input_df = input_df.astype(float)
+        except Exception as e:
+            predict_result.object = f"Local fallback prepare error: {str(e)}"
+            return
+        try:
+            pred = _local_model.predict(input_df)
+            co2_pred_value = float(np.asarray(pred).reshape(-1)[0])
+            predict_result.object = (
+                "The predicted CO₂ emissions is:<br><br>"
+                f"<span style='color:#147a3c; font-size:22px; font-weight:700'>{co2_pred_value:,.2f} MtCO₂</span>")
+        except Exception as e:
+            predict_result.object = f"Local model prediction error: {str(e)}"
+            return
+        
 
     btn_predict.on_click(run_predict)
 
