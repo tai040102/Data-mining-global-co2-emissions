@@ -203,7 +203,7 @@ def create_recommendation_view(df_all: pd.DataFrame):
         header_curr.object = f"**Data {ui_year}**"
 
         prev_year = ui_year - 1
-        curr_year = ui_year
+        curr_year = ui_year 
 
         df_country = df_all[df_all["Country"] == country_sel.value]
 
@@ -290,7 +290,7 @@ def create_recommendation_view(df_all: pd.DataFrame):
         recommend_text.object = "Running optimization… please wait."
         
         try:
-            resp = requests.post(API_RECOMMEND, json=payload, timeout=20)
+            resp = requests.post(API_RECOMMEND, json=payload, timeout=2000)
             data = resp.json()
         except Exception as e:
             recommend_text.object = f"❌ API call failed: {e}"
@@ -388,7 +388,7 @@ def create_recommendation_view(df_all: pd.DataFrame):
         }
         try:
             predict_result.object = "Calling XGBoost API..."
-            resp = requests.post(API_XGB, json=payload, timeout=8)
+            resp = requests.post(API_XGB, json=payload, timeout=80)
             if resp.status_code != 200:
                 try:
                     error_text = resp.json()
