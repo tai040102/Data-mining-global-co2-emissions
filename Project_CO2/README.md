@@ -101,3 +101,73 @@ Project_CO2/
 ├─ tab_recommendation.py     # Recommendation / optimization tab
 ├─ api_forecast.py           # FastAPI service for CO₂ forecasting
 └─ api_recommend.py          # FastAPI service for recommendation engine
+```
+---
+
+## 🚀 Getting Started
+1. Create Environment & Install Dependencies
+
+From the Project_CO2/ directory:
+
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+```
+pip install -r requirements.txt  # if available
+# or:
+# pip install panel bokeh pandas fastapi uvicorn tensorflow xgboost joblib
+```
+
+Make sure the Models/ folder contains all required models, scalers, and encoders.
+
+2. Run the Backend APIs
+
+In one terminal, start the forecast API (update port if needed to match API_URL in tab_forecast.py):
+```
+uvicorn api_forecast:app --host 0.0.0.0 --port 8001 --reload
+```
+
+In another terminal, start the recommendation API (update port to match API_URL in tab_recommendation.py):
+```
+uvicorn api_recommend:app --host 0.0.0.0 --port 8002 --reload
+```
+3. Run the Dashboard (Panel App)
+
+In a third terminal:
+```
+panel serve main_app.py \
+  --port 5006 \
+  --autoreload \
+  --show
+```
+
+This will open the CO₂ Emission Dashboard in your browser (usually at http://localhost:5006).
+
+## 🧭 How to Use
+
+**Dashboard tab**
+
+- Select a continent, country, and year range.
+
+- Explore KPIs and trends for total CO₂ and CO₂ per capita.
+
+- Compare countries or regions over time.
+
+**Forecast tab**
+
+- Choose a country and predict year.
+
+- Check the auto-filled historical window (e.g. last 3 years).
+
+- For years not in the dataset, manually enter feature values.
+
+- Click “Run Prediction” to get the forecasted CO₂ emissions.
+
+**Recommendation tab**
+
+- Select country and year, and set a target CO₂ emission.
+
+- Define base values and choose which features can be changed.
+
+- Set min/max percentage change for each selected feature.
+
+- Run the optimizer to get recommended adjustments and the corresponding predicted CO₂.
