@@ -9,7 +9,7 @@ import pandas as pd
 import joblib
 from tensorflow.keras.models import load_model  # type: ignore
 
-app = FastAPI(title="CO₂ Forecast API – Scenario 1 (GRU 5 years)")
+app = FastAPI(title="CO₂ Forecast API – Scenario 1 (GRU 3 years)")
 
 # ====== CONSTANTS ======
 MODELS_DIR = "Models"
@@ -47,7 +47,7 @@ class HistoryItem(BaseModel):
 class PredictRequest(BaseModel):
     country: str
     predict_year: int
-    # Giữ lại field để tương thích, nhưng API hiện chỉ hỗ trợ GRU (Scenario 1)
+    # Giữ lại field để tương thích, nhưng API hiện chỉ hỗ trợ GRU (Scenario 3-year)
     model_type: str = "gru"
     history: List[HistoryItem]
 
@@ -59,25 +59,25 @@ def _path(name: str) -> str:
 
 print(">> Loading models & scalers from:", os.path.abspath(MODELS_DIR))
 
-# Giống main.py: scaler_quantile + labelencoder_country + GRU5
+# Giống main.py: scaler_quantile + labelencoder_country + GRU3
 labelencoder_country = joblib.load(_path("labelencoder_country.save"))
 scaler = joblib.load(_path("scaler_quantile.save"))
-model_gru5 = load_model(_path("best_model_gru5_final.keras"), compile=False)
+model_gru3 = load_model(_path("best_model_gru3_final.keras"), compile=False)
 
-print(">> Scenario 1 GRU-5Y model loaded successfully.")
+print(">> Scenario 1 GRU-3Y model loaded successfully.")
 
 
 # ====== HELPERS ======
-def _predict_gru_5y(country: str, df_hist: pd.DataFrame) -> float:
+def _predict_gru_3y(country: str, df_hist: pd.DataFrame) -> float:
     """
     Scenario 1:
-    - Dùng 5 năm lịch sử (time-series).
+    - Dùng 3 năm lịch sử (time-series).
     - Áp dụng log1p -> scaler_quantile -> GRU -> inverse_transform -> expm1
       giống hàm predict_co2 trong main.py.
     """
 
-    # Sort theo Year và chắc chắn chỉ lấy đúng 5 năm gần nhất
-    df_hist = df_hist.sort_values("Year").tail(5)
+    # Sort theo Year và chắc chắn chỉ lấy đúng 3 năm gần nhất
+    df_hist = df_hist.sort_values("Year").tail(3)
 
     # Lấy đúng 10 feature theo đúng thứ tự
     seq_df = df_hist[FEATURES_GRU].copy()
@@ -86,8 +86,8 @@ def _predict_gru_5y(country: str, df_hist: pd.DataFrame) -> float:
     seq_df_log = np.log1p(seq_df)
 
     # scale bằng scaler_quantile
-    seq_scaled = scaler.transform(seq_df_log)        # (5, F)
-    X_new = np.expand_dims(seq_scaled, axis=0)       # (1, 5, F)
+    seq_scaled = scaler.transform(seq_df_log)        # (3, F)
+    X_new = np.expand_dims(seq_scaled, axis=0)       # (1, 3, F)
 
     # encode country
     if country not in labelencoder_country.classes_:
@@ -97,7 +97,7 @@ def _predict_gru_5y(country: str, df_hist: pd.DataFrame) -> float:
     X_country = np.array([[country_code]], dtype="int32")  # (1,1)
 
     # predict (scaled-log space)
-    y_pred_scaled = model_gru5.predict([X_new, X_country], verbose=0)  # (1,1)
+    y_pred_scaled = model_gru3.predict([X_new, X_country], verbose=0)  # (1,1)
 
     # inverse scale: ghép y_pred_scaled + zeros rồi inverse_transform
     num_feature = len(FEATURES_GRU)
@@ -125,13 +125,13 @@ def predict_co2(req: PredictRequest):
     # Sort theo Year
     df_hist = df_hist.sort_values("Year")
 
-    # Chỉ hỗ trợ Scenario 1 = GRU (5-year time series)
+    # Chỉ hỗ trợ Scenario 1 = GRU (3-year time series)
     model_type = (req.model_type or "gru").lower()
     if model_type != "gru":
         return {
             "status": "error",
             "message": (
-                f"This API currently supports only Scenario 1 (GRU 5 years). "
+                f"This API currently supports only Scenario 1 (GRU 3 years). "
                 f"Received model_type='{req.model_type}'. Please use 'gru'."
             ),
         }
@@ -144,12 +144,12 @@ def predict_co2(req: PredictRequest):
             "message": f"Missing columns for GRU: {', '.join(missing_cols)}",
         }
 
-    # Kiểm tra đúng 5 dòng history (fit cứng với tab_forecast)
+    # Kiểm tra đúng 3 dòng history (fit cứng với tab_forecast)
     n_rows = df_hist.shape[0]
-    if n_rows != 5:
+    if n_rows != 3:
         return {
             "status": "error",
-            "message": f"Scenario 1 requires EXACTLY 5 rows of history, got {n_rows}.",
+            "message": f"Scenario 1 requires EXACTLY 3 rows of history, got {n_rows}.",
         }
 
     # Nếu có ô trống thì báo FE fill hết
@@ -162,9 +162,9 @@ def predict_co2(req: PredictRequest):
             ),
         }
 
-    # ===== Chạy Scenario 1 – GRU 5 years =====
+    # ===== Chạy Scenario 1 – GRU 3 years =====
     try:
-        pred = _predict_gru_5y(req.country, df_hist)
+        pred = _predict_gru_3y(req.country, df_hist)
 
         # 🔴 chặn NaN / Inf để không trả về giá trị JSON không hợp lệ
         if np.isnan(pred) or np.isinf(pred):
@@ -182,8 +182,8 @@ def predict_co2(req: PredictRequest):
 
     return {
         "status": "ok",
-        "scenario": "Scenario 1 – GRU (5-year time series)",
-        "model": "GRU-5Y",
+        "scenario": "Scenario 1 – GRU (3-year time series)",
+        "model": "GRU-3Y",
         "country": req.country,
         "predict_year": req.predict_year,
         "prediction": pred,

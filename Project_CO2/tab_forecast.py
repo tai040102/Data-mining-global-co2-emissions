@@ -97,14 +97,14 @@ def create_forecast_view(df_all: pd.DataFrame):
         # gán styler cho tabulator
         editor.style = df_hist.style.apply(row_style, axis=1)
 
-    # ================== HELPER: BUILD HISTORY (CỐ ĐỊNH 5 NĂM) ==================
+    # ================== HELPER: BUILD HISTORY (CỐ ĐỊNH 3 NĂM) ==================
     def build_history(country_val, predict_year_val):
         """
-        Tạo history cố định 5 năm: [Y-5 .. Y-1]
+        Tạo history cố định 3 năm: [Y-3 .. Y-1]
         - Năm trong df_all (2001–2022) -> fill dữ liệu.
         - Năm ngoài range -> để trống feature cho user nhập.
         """
-        n = 5
+        n = 3
 
         df_country = df_all[df_all["Country"] == country_val].copy()
         df_country = df_country.sort_values("Year")
@@ -153,6 +153,7 @@ def create_forecast_view(df_all: pd.DataFrame):
         has_data = (~df_hist[FEATURES].isnull().all(axis=1)).sum()
         n = df_hist.shape[0]
 
+        # Nếu muốn hiện message hướng dẫn thì mở lại block dưới và sửa "3 years" cho đúng
         # msg = (
         #     f"Auto-filled last {n} years. {has_data} year(s) loaded from dataset "
         #     f"({min_year}–{max_year}).\n\n"
@@ -167,7 +168,6 @@ def create_forecast_view(df_all: pd.DataFrame):
         #         f"- ✏️ Editable years (ngoài dataset – hãy nhập feature): "
         #         f"**{', '.join(map(str, editable_years))}**\n"
         #     )
-
         # autofill_info.object = msg
 
     # ================== WATCHER: CHẶN SỬA NĂM 2001–2022 ==================
@@ -215,19 +215,19 @@ def create_forecast_view(df_all: pd.DataFrame):
             return
 
         n_rows = len(df_hist)
-        if n_rows != 5:
-            missing = 5 - n_rows
+        if n_rows != 3:
+            missing = 3 - n_rows
             if missing > 0:
                 result_box.object = (
-                    f"⚠️ History table just have **{n_rows} rows**, "
-                    f"needs exactly **5 rows** (5 consecutive years).\n\n"
+                    f"⚠️ History table just has **{n_rows} rows**, "
+                    f"needs exactly **3 rows** (3 consecutive years).\n\n"
                     f"👉 Please **add the missing {missing} rows** and fill in all features "
                     "before running the prediction."
                 )
             else:
                 result_box.object = (
-                    f"⚠️ History table has **{n_rows} rows**, but GRU requires **exactly 5 rows**.\n\n"
-                    "👉 Please keep exactly 5 consecutive years of history before running the prediction."
+                    f"⚠️ History table has **{n_rows} rows**, but GRU requires **exactly 3 rows**.\n\n"
+                    "👉 Please keep exactly 3 consecutive years of history before running the prediction."
                 )
             return
 
@@ -272,7 +272,6 @@ def create_forecast_view(df_all: pd.DataFrame):
             )
             return
 
-
         if resp.status_code != 200:
             result_box.object = f"❌ API HTTP {resp.status_code}: {data}"
             return
@@ -284,14 +283,15 @@ def create_forecast_view(df_all: pd.DataFrame):
         pred = data["prediction"]
 
         result_box.object = (
-            f"The model forecasts that **{data['country']}’s** total CO₂ emissions in {data['predict_year']} will be: <span style='color:#147A3C; font-size:16px; font-weight:800;'>**{pred:,.2f} MtCO₂**</span>\n\n"
+            f"The model forecasts that **{data['country']}’s** total CO₂ emissions in {data['predict_year']} will be: "
+            "<span style='color:#147A3C; font-size:16px; font-weight:800;'>"
+            f"**{pred:,.2f} MtCO₂**</span>\n\n"
         )
 
     btn_run.on_click(run_prediction)
 
     # ================== LAYOUT ==================
     return pn.Column(
-        # pn.pane.Markdown("## Forecast CO₂ Emission"),
         pn.Row(country, predict_year),
         pn.Spacer(height=10),
         pn.pane.Markdown(" <h2 style='color:#147A3C; font-weight:700;'>Input for Prediction</h2>"),
