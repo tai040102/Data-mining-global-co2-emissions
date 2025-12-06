@@ -58,7 +58,7 @@ def create_recommendation_view(df_all: pd.DataFrame):
     max_base_year = max(base_years)
 
     # Year dùng cho UI: từ (min+1) tới (max+1) -> VD 2002..2022
-    ui_years = list(range(min_base_year + 1, max_base_year + 1))
+    ui_years = list(range(min_base_year + 1, max_base_year + 1000))
 
     countries = sorted(df_all["Country"].unique())
 
@@ -78,7 +78,7 @@ def create_recommendation_view(df_all: pd.DataFrame):
     year_sel = pn.widgets.Select(
         name="Year",
         options=ui_years,
-        value=max(ui_years),
+        value=2022,
         css_classes=["rec-select"],
     )
 
@@ -111,7 +111,7 @@ def create_recommendation_view(df_all: pd.DataFrame):
     # ========== TABLE HEADER (1 row) ==========
 
     header_prev = pn.pane.Markdown("**Data (Year-1)**", css_classes=["rec-data-cell"])
-    header_curr = pn.pane.Markdown("**Data (Year)**", css_classes=["rec-data-cell"])
+    #header_curr = pn.pane.Markdown("**Data (Year)**", css_classes=["rec-data-cell"])
 
     header_row = pn.Row(
         pn.Spacer(),  # checkbox
@@ -119,7 +119,7 @@ def create_recommendation_view(df_all: pd.DataFrame):
         header_prev,
         pn.pane.Markdown("**Max reduction rate**"),
         pn.pane.Markdown("**Max increase rate**"),
-        header_curr,
+        #header_curr,
         css_classes=["rec-row", "rec-row-header"],
         sizing_mode="stretch_width",
     )
@@ -136,6 +136,17 @@ def create_recommendation_view(df_all: pd.DataFrame):
             "0",
             css_classes=["rec-data-cell"],
         )
+        data_prev_md = pn.pane.Markdown("0", css_classes=["rec-data-cell"])
+        data_prev_input = pn.widgets.FloatInput(
+            name="",
+            value=0.0,
+            step=1,
+            css_classes=["rec-data-input"],
+            visible=False
+        )
+        data_prev_placeholder = pn.Column(data_prev_md, css_classes=["rec-data-cell-col"])
+        
+
 
         max_reduce = pn.widgets.FloatSlider(
             name="",
@@ -156,19 +167,22 @@ def create_recommendation_view(df_all: pd.DataFrame):
         )
 
         # cột Data (Year) dùng input HTML để không phá layout
-        data_curr = pn.pane.HTML(
-            '<input type="number" class="rec-num-input" value="0" />',
-            css_classes=["rec-data-curr"],
-        )
+        # data_curr = pn.pane.HTML(
+        #     '<input type="number" class="rec-num-input" value="0" />',
+        #     css_classes=["rec-data-curr"],
+        # )
 
         feature_controls.append(
             dict(
                 name=feat,
                 checkbox=cb,
-                data_prev=data_prev,
+                data_prev_md=data_prev_md,
+                data_prev_input=data_prev_input,
+                data_prev_placeholder=data_prev_placeholder,
+                #data_prev=data_prev,
                 max_reduce=max_reduce,
                 max_increase=max_increase,
-                data_curr=data_curr,
+                #data_curr=data_curr,
             )
         )
 
@@ -178,10 +192,10 @@ def create_recommendation_view(df_all: pd.DataFrame):
                 _pretty_name(feat),
                 css_classes=["rec-feature-name"],
             ),
-            data_prev,
+            data_prev_placeholder,
             max_reduce,
             max_increase,
-            data_curr,
+            #data_curr,
             css_classes=["rec-row"],
             sizing_mode="stretch_width",
         )
@@ -200,43 +214,65 @@ def create_recommendation_view(df_all: pd.DataFrame):
 
         # Label hiển thị đúng
         header_prev.object = f"**Data {ui_year - 1}**"
-        header_curr.object = f"**Data {ui_year}**"
+        #header_curr.object = f"**Data {ui_year}**"
 
         prev_year = ui_year - 1
-        curr_year = ui_year 
+        #curr_year = ui_year 
 
         df_country = df_all[df_all["Country"] == country_sel.value]
 
         row_prev = df_country[df_country["Year"] == prev_year]
-        row_curr = df_country[df_country["Year"] == curr_year]
-
+        
+        
+        #row_curr = df_country[df_country["Year"] == curr_year]
+        
         for fc in feature_controls:
             col = fc["name"]
 
-            # -------- Data (Year-1): chỉ hiển thị --------
             if not row_prev.empty and col in row_prev.columns:
                 v_prev = row_prev.iloc[0][col]
+                v_prev = 0 if pd.isna(v_prev) else v_prev
+                # show Markdown read-only
+                fc["data_prev_md"].object = _fmt_value(v_prev)
+                # ensure placeholder shows the markdown and hide input
+                fc["data_prev_input"].visible = False
+                fc["data_prev_placeholder"].clear()
+                fc["data_prev_placeholder"].append(fc["data_prev_md"])
             else:
-                v_prev = 0
-            v_prev = 0 if pd.isna(v_prev) else v_prev
-            fc["data_prev"].object = _fmt_value(v_prev)
+                # no historical value -> show editable FloatInput (user can type)
+                fc["data_prev_input"].value = 0.0
+                fc["data_prev_input"].visible = True
+                fc["data_prev_placeholder"].clear()
+                fc["data_prev_placeholder"].append(fc["data_prev_input"])
+
+
+        # for fc in feature_controls:
+        #     col = fc["name"]
+
+        #     # -------- Data (Year-1): chỉ hiển thị --------
+        #     if not row_prev.empty and col in row_prev.columns:
+        #         v_prev = row_prev.iloc[0][col]
+        #     else:
+        #         v_prev = 0
+        #     v_prev = 0 if pd.isna(v_prev) else v_prev
+        #     fc["data_prev"].object = _fmt_value(v_prev)
 
             # -------- Data (Year): nếu không có dữ liệu -> 0 --------
-            if not row_curr.empty and col in row_curr.columns:
-                v_curr = row_curr.iloc[0][col]
-                v_curr = 0 if pd.isna(v_curr) else v_curr
-            else:
-                v_curr = 0
+            # if not row_curr.empty and col in row_curr.columns:
+            #     v_curr = row_curr.iloc[0][col]
+            #     v_curr = 0 if pd.isna(v_curr) else v_curr
+            # else:
+            #     v_curr = 0
 
-            # giá trị đưa vào thuộc tính value của input -> KHÔNG format comma
-            try:
-                raw_val = float(v_curr)
-            except Exception:
-                raw_val = 0.0
+            # # giá trị đưa vào thuộc tính value của input -> KHÔNG format comma
+            # try:
+            #     raw_val = float(v_curr)
+            # except Exception:
+            #     raw_val = 0.0
 
-            fc["data_curr"].object = (
-                f'<input type="number" class="rec-num-input" value="{raw_val}" />'
-            )
+            # fc["data_curr"].object = (
+            #     f'<input type="number" class="rec-num-input" value="{raw_val}" />'
+            # )
 
     country_sel.param.watch(update_feature_values, "value")
     year_sel.param.watch(update_feature_values, "value")
@@ -266,9 +302,35 @@ def create_recommendation_view(df_all: pd.DataFrame):
             return
         base_values = {}
         for fc in feature_controls:
-            raw_html = fc["data_curr"].object
-            val_str = raw_html.split('value="')[1].split('"')[0]
-            base_values[fc["name"]] = float(val_str)
+            # If current placeholder shows an input widget, use its .value
+            if fc["data_prev_placeholder"][0] is fc["data_prev_input"]:
+                try:
+                    base_values[fc["name"]] = float(fc["data_prev_input"].value)
+                except Exception:
+                    base_values[fc["name"]] = 0.0
+            else:
+                # it's the markdown pane: parse formatted string remove commas
+                txt = fc["data_prev_md"].object
+                if isinstance(txt, str):
+                    txt_clean = txt.replace(",", "")
+                    try:
+                        base_values[fc["name"]] = float(txt_clean)
+                    except Exception:
+                        base_values[fc["name"]] = 0.0
+                else:
+                    # fallback
+                    try:
+                        base_values[fc["name"]] = float(txt)
+                    except Exception:
+                        base_values[fc["name"]] = 0.0
+            # raw_html = fc["data_prev"].object
+            # val_str = raw_html.split('value="')[1].split('"')[0]
+            # base_values[fc["name"]] = float(val_str)
+            # txt = fc["data_prev"].object.replace(",", "")
+            # try:
+            #     base_values[fc["name"]] = float(txt)
+            # except:
+            #     base_values[fc["name"]] = 0.0
         selected_features = []
         #base_values["Co2_MtCO2"] = float(target)
         for fc in selected:
@@ -307,11 +369,27 @@ def create_recommendation_view(df_all: pd.DataFrame):
             "the model indicates that the following features need to be adjusted:",
         ]
         
+        # for feat, pct in best_change.items():
+        #     color = "#22c55e" if pct >= 0 else "#ef4444"
+        #     lines.append(f"- **{_pretty_name(feat)}**: "
+        #              f"<span style='color:{color}; font-weight:700'>{pct:.2f}%</span>")
+            
         for feat, pct in best_change.items():
-            color = "#22c55e" if pct >= 0 else "#ef4444"
-            lines.append(f"- **{_pretty_name(feat)}**: "
-                     f"<span style='color:{color}; font-weight:700'>{pct:.2f}%</span>")
+            base = base_values.get(feat, 0)
+            new_val = base * (1 + pct / 100.0)
 
+            base_f = _fmt_value(base)
+            new_f = _fmt_value(new_val)
+
+            color = "#22c55e" if pct >= 0 else "#ef4444"
+
+            lines.append(
+                f"- **{_pretty_name(feat)}**: "
+                f"<span style='font-weight:700'>{new_f}</span> "
+                f"(<span style='color:{color}; font-weight:700'>{pct:.2f}%</span>, "
+                f"from {base_f})"
+            )
+        
         lines.append("")
 
         recommend_text.object = "\n".join(lines)
