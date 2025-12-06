@@ -57,8 +57,8 @@ def create_recommendation_view(df_all: pd.DataFrame):
     min_base_year = min(base_years)
     max_base_year = max(base_years)
 
-    # Year dùng cho UI: từ (min+1) tới (max+1) -> VD 2002..2023
-    ui_years = list(range(min_base_year + 1, max_base_year + 2))
+    # Year dùng cho UI: từ (min+1) tới (max+1) -> VD 2002..2022
+    ui_years = list(range(min_base_year + 1, max_base_year + 1))
 
     countries = sorted(df_all["Country"].unique())
 
