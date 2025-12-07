@@ -433,10 +433,9 @@ def create_recommendation_view(df_all: pd.DataFrame):
         _local_load_error  = f"Lỗi khi load model: {str(e)}"
     
     predict_inputs = {
-        feat: pn.widgets.FloatInput(
+        feat: pn.widgets.TextInput(
             name=_pretty_name(feat),
-            value=0.0,
-            step=1,
+            value="0",
             css_classes=["rec-predict-input"],
         )
         for feat in FEATURES
@@ -458,8 +457,13 @@ def create_recommendation_view(df_all: pd.DataFrame):
     def run_predict(event):
         features_dict  = {}
         for feat in FEATURES:
-            val = predict_inputs[feat].value
-            features_dict[feat] = 0.0 if val is None else float(val)
+            raw = predict_inputs[feat].value or "0"
+            raw = str(raw).replace(",", "")
+            try:
+                val = float(raw)
+            except ValueError:
+                val = 0.0
+            features_dict[feat] = val
         payload = {
             "country": country_sel.value,
             "features": features_dict,
