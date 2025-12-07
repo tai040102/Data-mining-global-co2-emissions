@@ -1,19 +1,6 @@
 # tab_recommendation.py
 import panel as pn
 import pandas as pd
-import joblib
-import numpy as np
-from es_optimizer import es_optimize_changes
-
-import requests
-
-API_XGB = "http://localhost:8002/predict_xgboost"
-LOCAL_MODEL_XG_PATH = "Models/Model_XGBoost.joblib"
-LOCAL_FEATURES_XG_PATH = "Models/model_features.joblib"
-
-
-API_RECOMMEND = "http://localhost:8003/recommend"
-
 
 FEATURES = [
     "Population",
@@ -53,12 +40,10 @@ def create_recommendation_view(df_all: pd.DataFrame):
     df_all = df_all.dropna(subset=["Country", "Year"])
     df_all["Year"] = df_all["Year"].astype(int)
 
-    base_years = sorted(df_all["Year"].unique())
-    min_base_year = min(base_years)
-    max_base_year = max(base_years)
 
-    # Year dùng cho UI: từ (min+1) tới (max+1) -> VD 2002..2022
-    ui_years = list(range(min_base_year + 1, max_base_year + 1000))
+
+    # Year dùng cho UI: từ (min+1) tới (max+1) -> VD 2002..2023
+    
 
     countries = sorted(df_all["Country"].unique())
 
@@ -77,8 +62,9 @@ def create_recommendation_view(df_all: pd.DataFrame):
 
     year_sel = pn.widgets.Select(
         name="Year",
-        options=ui_years,
-        value=2022,
+        options=[2023],  
+        value=2023,      
+        disabled=True,   
         css_classes=["rec-select"],
     )
 
@@ -101,7 +87,7 @@ def create_recommendation_view(df_all: pd.DataFrame):
         ),
         pn.Spacer(width=30),
         pn.Column(
-            pn.pane.Markdown(" **CO₂ Emission Target**", margin=(0, 0, 2, 0)),
+            pn.pane.Markdown("**CO₂ Emission Target**", margin=(0, 0, 2, 0)),
             co2_target,
         ),
         sizing_mode="stretch_width",
@@ -111,7 +97,7 @@ def create_recommendation_view(df_all: pd.DataFrame):
     # ========== TABLE HEADER (1 row) ==========
 
     header_prev = pn.pane.Markdown("**Data (Year-1)**", css_classes=["rec-data-cell"])
-    #header_curr = pn.pane.Markdown("**Data (Year)**", css_classes=["rec-data-cell"])
+    header_curr = pn.pane.Markdown("**Data (Year)**", css_classes=["rec-data-cell"])
 
     header_row = pn.Row(
         pn.Spacer(),  # checkbox
@@ -119,7 +105,7 @@ def create_recommendation_view(df_all: pd.DataFrame):
         header_prev,
         pn.pane.Markdown("**Max reduction rate**"),
         pn.pane.Markdown("**Max increase rate**"),
-        #header_curr,
+        header_curr,
         css_classes=["rec-row", "rec-row-header"],
         sizing_mode="stretch_width",
     )
@@ -136,17 +122,6 @@ def create_recommendation_view(df_all: pd.DataFrame):
             "0",
             css_classes=["rec-data-cell"],
         )
-        data_prev_md = pn.pane.Markdown("0", css_classes=["rec-data-cell"])
-        data_prev_input = pn.widgets.FloatInput(
-            name="",
-            value=0.0,
-            step=1,
-            css_classes=["rec-data-input"],
-            visible=False
-        )
-        data_prev_placeholder = pn.Column(data_prev_md, css_classes=["rec-data-cell-col"])
-        
-
 
         max_reduce = pn.widgets.FloatSlider(
             name="",
@@ -155,6 +130,7 @@ def create_recommendation_view(df_all: pd.DataFrame):
             value=-10,
             step=1,
             bar_color="#ef4444",
+            disabled=True, #update
         )
 
         max_increase = pn.widgets.FloatSlider(
@@ -164,25 +140,48 @@ def create_recommendation_view(df_all: pd.DataFrame):
             value=10,
             step=1,
             bar_color="#22c55e",
+            disabled=True, #update
         )
 
         # cột Data (Year) dùng input HTML để không phá layout
-        # data_curr = pn.pane.HTML(
-        #     '<input type="number" class="rec-num-input" value="0" />',
-        #     css_classes=["rec-data-curr"],
-        # )
+        data_curr = pn.pane.HTML(
+            '<input type="number" class="rec-num-input" value="0" disabled />',
+            css_classes=["rec-data-curr"],
+        )
+        INPUT_STYLE_NO_BOX = "border:none; background:transparent; width:100%; text-align:right; color:#333;"
+        def toggle_row(event, mr=max_reduce, mi=max_increase, dc=data_curr, dp=data_prev):
+                is_checked = event.new
+                
+                mr.disabled = not is_checked
+                mi.disabled = not is_checked
+                
+                # Lấy giá trị hiện tại của Data 2022
+                try:
+                    val_text = dp.object.replace(",", "") 
+                    val_float = float(val_text)
+                except:
+                    val_float = 0
+
+                if is_checked:
+                    # Nếu tick -> Ẩn hoàn toàn (display:none)
+                    # Lưu ý: value vẫn format .2f để chuẩn dữ liệu
+                    dc.object = f'<input type="number" class="rec-num-input" value="{val_float:.2f}" style="display:none;" />'
+                else:
+                    # Nếu bỏ tick -> Hiện lại nhưng KHÔNG CÓ KHUNG (dùng style NO_BOX)
+                    # Format value="{val_float:.2f}" để lấy 2 số thập phân
+                    dc.object = (
+                        f'<input type="number" class="rec-num-input" '
+                        f'value="{val_float:.2f}" '
+                        f'disabled '
+                        f'style="{INPUT_STYLE_NO_BOX}" />'
+                    )
+
+        cb.param.watch(toggle_row, 'value')
 
         feature_controls.append(
             dict(
-                name=feat,
-                checkbox=cb,
-                data_prev_md=data_prev_md,
-                data_prev_input=data_prev_input,
-                data_prev_placeholder=data_prev_placeholder,
-                #data_prev=data_prev,
-                max_reduce=max_reduce,
-                max_increase=max_increase,
-                #data_curr=data_curr,
+                name=feat, checkbox=cb, data_prev=data_prev,
+                max_reduce=max_reduce, max_increase=max_increase, data_curr=data_curr,
             )
         )
 
@@ -192,10 +191,10 @@ def create_recommendation_view(df_all: pd.DataFrame):
                 _pretty_name(feat),
                 css_classes=["rec-feature-name"],
             ),
-            data_prev_placeholder,
+            data_prev,
             max_reduce,
             max_increase,
-            #data_curr,
+            data_curr,
             css_classes=["rec-row"],
             sizing_mode="stretch_width",
         )
@@ -212,67 +211,43 @@ def create_recommendation_view(df_all: pd.DataFrame):
     def update_feature_values(event=None):
         ui_year = int(year_sel.value)
 
-        # Label hiển thị đúng
         header_prev.object = f"**Data {ui_year - 1}**"
-        #header_curr.object = f"**Data {ui_year}**"
+        header_curr.object = f"**Data {ui_year}**"
 
         prev_year = ui_year - 1
-        #curr_year = ui_year 
+        curr_year = ui_year
 
         df_country = df_all[df_all["Country"] == country_sel.value]
-
         row_prev = df_country[df_country["Year"] == prev_year]
-        
-        
-        #row_curr = df_country[df_country["Year"] == curr_year]
         
         for fc in feature_controls:
             col = fc["name"]
+            is_checked = fc["checkbox"].value
 
+            # 1. Lấy Data 2022 (Prev)
+            val_prev = 0
             if not row_prev.empty and col in row_prev.columns:
-                v_prev = row_prev.iloc[0][col]
-                v_prev = 0 if pd.isna(v_prev) else v_prev
-                # show Markdown read-only
-                fc["data_prev_md"].object = _fmt_value(v_prev)
-                # ensure placeholder shows the markdown and hide input
-                fc["data_prev_input"].visible = False
-                fc["data_prev_placeholder"].clear()
-                fc["data_prev_placeholder"].append(fc["data_prev_md"])
+                val_prev = row_prev.iloc[0][col]
+            
+            val_prev = 0 if pd.isna(val_prev) else val_prev
+            fc["data_prev"].object = _fmt_value(val_prev)
+
+            # 2. Xử lý Data 2023 (Curr)
+            raw_val = float(val_prev)
+
+            if is_checked:
+                # Nếu đang chỉnh sửa -> Ẩn
+                fc["data_curr"].object = (
+                    f'<input type="number" class="rec-num-input" value="{raw_val:.2f}" style="display:none;" />'
+                )
             else:
-                # no historical value -> show editable FloatInput (user can type)
-                fc["data_prev_input"].value = 0.0
-                fc["data_prev_input"].visible = True
-                fc["data_prev_placeholder"].clear()
-                fc["data_prev_placeholder"].append(fc["data_prev_input"])
-
-
-        # for fc in feature_controls:
-        #     col = fc["name"]
-
-        #     # -------- Data (Year-1): chỉ hiển thị --------
-        #     if not row_prev.empty and col in row_prev.columns:
-        #         v_prev = row_prev.iloc[0][col]
-        #     else:
-        #         v_prev = 0
-        #     v_prev = 0 if pd.isna(v_prev) else v_prev
-        #     fc["data_prev"].object = _fmt_value(v_prev)
-
-            # -------- Data (Year): nếu không có dữ liệu -> 0 --------
-            # if not row_curr.empty and col in row_curr.columns:
-            #     v_curr = row_curr.iloc[0][col]
-            #     v_curr = 0 if pd.isna(v_curr) else v_curr
-            # else:
-            #     v_curr = 0
-
-            # # giá trị đưa vào thuộc tính value của input -> KHÔNG format comma
-            # try:
-            #     raw_val = float(v_curr)
-            # except Exception:
-            #     raw_val = 0.0
-
-            # fc["data_curr"].object = (
-            #     f'<input type="number" class="rec-num-input" value="{raw_val}" />'
-            # )
+                # Nếu hiển thị -> Bỏ khung viền + Format 2 số thập phân
+                fc["data_curr"].object = (
+                    f'<input type="number" class="rec-num-input" '
+                    f'value="{raw_val:.2f}" '
+                    f'disabled '
+                    f'style="{INPUT_STYLE_NO_BOX}" />'
+                )
 
     country_sel.param.watch(update_feature_values, "value")
     year_sel.param.watch(update_feature_values, "value")
@@ -300,113 +275,24 @@ def create_recommendation_view(df_all: pd.DataFrame):
                 "Please select at least **one feature** to adjust."
             )
             return
-        base_values = {}
-        for fc in feature_controls:
-            # If current placeholder shows an input widget, use its .value
-            if fc["data_prev_placeholder"][0] is fc["data_prev_input"]:
-                try:
-                    base_values[fc["name"]] = float(fc["data_prev_input"].value)
-                except Exception:
-                    base_values[fc["name"]] = 0.0
-            else:
-                # it's the markdown pane: parse formatted string remove commas
-                txt = fc["data_prev_md"].object
-                if isinstance(txt, str):
-                    txt_clean = txt.replace(",", "")
-                    try:
-                        base_values[fc["name"]] = float(txt_clean)
-                    except Exception:
-                        base_values[fc["name"]] = 0.0
-                else:
-                    # fallback
-                    try:
-                        base_values[fc["name"]] = float(txt)
-                    except Exception:
-                        base_values[fc["name"]] = 0.0
-            # raw_html = fc["data_prev"].object
-            # val_str = raw_html.split('value="')[1].split('"')[0]
-            # base_values[fc["name"]] = float(val_str)
-            # txt = fc["data_prev"].object.replace(",", "")
-            # try:
-            #     base_values[fc["name"]] = float(txt)
-            # except:
-            #     base_values[fc["name"]] = 0.0
-        selected_features = []
-        #base_values["Co2_MtCO2"] = float(target)
-        for fc in selected:
-            feat = fc["name"]
-            min_pct = fc["max_reduce"].value
-            max_pct = fc["max_increase"].value
-            selected_features.append({
-                "feature": feat,
-                "min_pct": min_pct,
-                "max_pct": max_pct
-            })
-        payload = {
-            "country": country_sel.value,
-            "year": int(year_sel.value),
-            "target": float(target),
-            "base_values": base_values,
-            "selected_features": selected_features
-        }
-        recommend_text.object = "Running optimization… please wait."
-        
-        try:
-            resp = requests.post(API_RECOMMEND, json=payload, timeout=2000)
-            data = resp.json()
-        except Exception as e:
-            recommend_text.object = f"❌ API call failed: {e}"
-            return
-        if resp.status_code != 200 or data.get("status") != "ok":
-            recommend_text.object = f"❌ API error: {data}"
-            return
-        best_change = data["best_change_pct"]
-        best_pred = data["predicted_co2"]
-        fitness = data["fitness"]
-        
+
         lines = [
             f"To achieve a CO₂ emission level of <span style='color:#147a3c; font-weight:700'>{target:.0f} MtCO₂</span>,",
             "the model indicates that the following features need to be adjusted:",
         ]
-        
-        # for feat, pct in best_change.items():
-        #     color = "#22c55e" if pct >= 0 else "#ef4444"
-        #     lines.append(f"- **{_pretty_name(feat)}**: "
-        #              f"<span style='color:{color}; font-weight:700'>{pct:.2f}%</span>")
-            
-        for feat, pct in best_change.items():
-            base = base_values.get(feat, 0)
-            new_val = base * (1 + pct / 100.0)
-
-            base_f = _fmt_value(base)
-            new_f = _fmt_value(new_val)
-
-            color = "#22c55e" if pct >= 0 else "#ef4444"
+        for fc in selected:
+            name = _pretty_name(fc["name"])
+            dec = fc["max_reduce"].value
+            inc = fc["max_increase"].value
+            red = f"<span style='color:#ef4444'>{dec:.0f}%</span>"
+            green = f"<span style='color:#22c55e'>+{inc:.0f}%</span>"
 
             lines.append(
-                f"- **{_pretty_name(feat)}**: "
-                f"<span style='font-weight:700'>{new_f}</span> "
-                f"(<span style='color:{color}; font-weight:700'>{pct:.2f}%</span>, "
-                f"from {base_f})"
+                f"- **{name}**: between {red} reduction and {green} increase"
             )
-        
-        lines.append("")
+
 
         recommend_text.object = "\n".join(lines)
-        
-        # for fc in selected:
-        #     name = _pretty_name(fc["name"])
-        #     dec = fc["max_reduce"].value
-        #     inc = fc["max_increase"].value
-        #     red = f"<span style='color:#ef4444'>{dec:.0f}%</span>"
-        #     green = f"<span style='color:#22c55e'>+{inc:.0f}%</span>"
-
-        #     lines.append(
-        #         f"- **{name}**: between {red} reduction and {green} increase"
-        #     )
-
-
-        # recommend_text.object = "\n".join(lines)
 
     btn_recommend.on_click(run_recommend)
 
@@ -418,24 +304,11 @@ def create_recommendation_view(df_all: pd.DataFrame):
     )
 
     # ========== RIGHT CARD: PREDICT CO2 ==========
-    _local_model  = None
-    _local_feature_names  = None
-    _local_load_error  = None
-    try:
-        _local_model  = joblib.load(LOCAL_MODEL_XG_PATH)
-        _local_feature_names  = joblib.load(LOCAL_FEATURES_XG_PATH)
-        # đảm bảo là list
-        if not isinstance(_local_feature_names, (list, tuple)):
-            _local_feature_names  = list(_local_feature_names)
-    except FileNotFoundError as e:
-        _local_load_error  = f"Không tìm thấy file model/feature: {e.filename}"
-    except Exception as e:
-        _local_load_error  = f"Lỗi khi load model: {str(e)}"
-    
     predict_inputs = {
-        feat: pn.widgets.TextInput(
+        feat: pn.widgets.FloatInput(
             name=_pretty_name(feat),
-            value="0",
+            value=0.0,
+            step=1,
             css_classes=["rec-predict-input"],
         )
         for feat in FEATURES
@@ -455,71 +328,12 @@ def create_recommendation_view(df_all: pd.DataFrame):
     )
 
     def run_predict(event):
-        features_dict  = {}
-        for feat in FEATURES:
-            raw = predict_inputs[feat].value or "0"
-            raw = str(raw).replace(",", "")
-            try:
-                val = float(raw)
-            except ValueError:
-                val = 0.0
-            features_dict[feat] = val
-        payload = {
-            "country": country_sel.value,
-            "features": features_dict,
-        }
-        try:
-            predict_result.object = "Calling XGBoost API..."
-            resp = requests.post(API_XGB, json=payload, timeout=80)
-            if resp.status_code != 200:
-                try:
-                    error_text = resp.json()
-                except Exception:
-                    error_text = resp.text
-                predict_result.object = f"❌ API Error {resp.status_code}: {error_text}"
-                # fallback to local if available
-            else:
-                data = resp.json()
-                if data.get("status") == "ok" and "prediction" in data:
-                    pred_val = float(data["prediction"])
-                    predict_result.object = (
-                        "The predicted CO₂ emissions is:<br><br>"
-                        f"<span style='color:#147a3c; font-size:22px; font-weight:700'>{pred_val:,.2f} MtCO₂</span>"
-                    )
-                    return
-                else:
-                    predict_result.object = f"❌ API response error: {data}"
-        except Exception as e:
-            # network / connection error -> fallback to local
-            predict_result.object = f"⚠️ API call failed: {e}"
+        total = sum(widget.value for widget in predict_inputs.values())
 
-        # If reached here, try local fallback if possible
-        if _local_model is None:
-            predict_result.object = predict_result.object + "\n\n❌ No local model available for fallback."
-            return
-        
-        try:    
-            input_df = pd.DataFrame([features_dict])
-            missing_in_input = [c for c in _local_feature_names  if c not in input_df.columns]
-            extra_in_input = [c for c in input_df.columns if c not in _local_feature_names ]
-            if missing_in_input:
-                for c in missing_in_input:
-                    input_df[c] = 0.0
-            input_df = input_df[_local_feature_names ]
-            input_df = input_df.astype(float)
-        except Exception as e:
-            predict_result.object = f"Local fallback prepare error: {str(e)}"
-            return
-        try:
-            pred = _local_model.predict(input_df)
-            co2_pred_value = float(np.asarray(pred).reshape(-1)[0])
-            predict_result.object = (
-                "The predicted CO₂ emissions is:<br><br>"
-                f"<span style='color:#147a3c; font-size:22px; font-weight:700'>{co2_pred_value:,.2f} MtCO₂</span>")
-        except Exception as e:
-            predict_result.object = f"Local model prediction error: {str(e)}"
-            return
-        
+        predict_result.object = (
+            "The predicted total CO₂ emissions is:<br><br>"
+            f"<span style='color:#147a3c; font-size:22px; font-weight:700'>{total/100:.1f} MtCO₂</span>"
+        )
 
     btn_predict.on_click(run_predict)
 
