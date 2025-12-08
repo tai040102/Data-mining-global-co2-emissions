@@ -1,7 +1,7 @@
 # tab_recommendation.py
 import panel as pn
 import pandas as pd
-
+import requests
 FEATURES = [
     "Population",
     "GDP",
@@ -13,7 +13,7 @@ FEATURES = [
     "Deforest_Percent",
     "Energy_Capita_kWh",
 ]
-
+API_URL = "http://localhost:8000/recommend"
 
 def _pretty_name(feat: str) -> str:
     return feat.replace("_", " ")
@@ -267,33 +267,129 @@ def create_recommendation_view(df_all: pd.DataFrame):
     )
 
     def run_recommend(event):
+        # 1. Chuẩn bị dữ liệu UI
         target = co2_target.value
-        selected = [fc for fc in feature_controls if fc["checkbox"].value]
+        ui_year = int(year_sel.value)
+        country = country_sel.value
+        
+        # Lấy danh sách feature được chọn (checkbox = True) để gửi đi tối ưu
+        selected_controls = [fc for fc in feature_controls if fc["checkbox"].value]
 
-        if not selected:
-            recommend_text.object = (
-                "Please select at least **one feature** to adjust."
-            )
+        if not selected_controls:
+            recommend_text.object = "⚠️ Please select at least **one feature** to adjust."
             return
+        
+        # Đổi trạng thái nút bấm
+        original_btn_name = btn_recommend.name
+        btn_recommend.name = "Running Optimization..."
+        btn_recommend.disabled = True
+        recommend_text.object = "⏳ Calculating recommendations..."
 
-        lines = [
-            f"To achieve a CO₂ emission level of <span style='color:#147a3c; font-weight:700'>{target:.0f} MtCO₂</span>,",
-            "the model indicates that the following features need to be adjusted:",
-        ]
-        for fc in selected:
-            name = _pretty_name(fc["name"])
-            dec = fc["max_reduce"].value
-            inc = fc["max_increase"].value
-            red = f"<span style='color:#ef4444'>{dec:.0f}%</span>"
-            green = f"<span style='color:#22c55e'>+{inc:.0f}%</span>"
+        try:
+            # 2. Lấy Base Values (Dữ liệu thực tế năm 2022 - Year-1)
+            prev_year = ui_year - 1
+            df_country = df_all[df_all["Country"] == country]
+            row_prev = df_country[df_country["Year"] == prev_year]
+            
+            base_values = {}
+            if not row_prev.empty:
+                cols_to_get = FEATURES + ["Co2_MtCO2"] 
+                for col in cols_to_get:
+                    if col in row_prev.columns:
+                        val = row_prev.iloc[0][col]
+                        base_values[col] = float(val) if pd.notnull(val) else 0.0
+            
+            # 3. Payload gửi API
+            selected_features_payload = []
+            for fc in selected_controls:
+                selected_features_payload.append({
+                    "feature": fc["name"],
+                    "min_pct": float(fc["max_reduce"].value),
+                    "max_pct": float(fc["max_increase"].value)
+                })
 
-            lines.append(
-                f"- **{name}**: between {red} reduction and {green} increase"
-            )
+            payload = {
+                "country": country,
+                "year": ui_year,
+                "target": float(target),
+                "base_values": base_values,
+                "selected_features": selected_features_payload
+            }
 
+            # 4. Gọi API
+            response = requests.post(API_URL, json=payload, timeout=60)
+            
+            if response.status_code == 200:
+                res_data = response.json()
+                pred_co2 = res_data["predicted_co2"]
+                best_changes = res_data["best_change_pct"] 
+                
+                # ========== 5. FORMAT TEXT KẾT QUẢ (GIỐNG HÌNH MẪU) ==========
+                
+                # Header
+                lines = [
+                    f"Based on the information you provided, we recommend the following set of feature values "
+                    f"to achieve CO₂ emissions as close as possible to your specified CO₂ target "
+                    f"(<span style='color:#147a3c; font-weight:bold'>{target:.0f} MtCO₂</span>):"
+                ]
+                
+                # List Features: Hiển thị TẤT CẢ các biến (được tick và không được tick)
+                for fc in feature_controls:
+                    fname = fc["name"]
+                    pname = _pretty_name(fname)
+                    
+                    # Lấy giá trị gốc
+                    base_val = base_values.get(fname, 0.0)
+                    
+                    # Lấy % thay đổi từ API (nếu không được chọn hoặc không thay đổi thì là 0)
+                    pct = best_changes.get(fname, 0.0)
+                    
+                    # Tính giá trị mới: New = Base * (1 + pct/100)
+                    new_val = base_val * (1 + pct / 100.0)
+                    
+                    # Format số liệu (dùng hàm _fmt_value có sẵn)
+                    val_str = _fmt_value(new_val)
+                    
+                    # Format phần % thay đổi (Tô màu)
+                    change_str = ""
+                    if pct < -0.01:
+                        # Giảm -> Màu Đỏ
+                        change_str = f" <span style='color:#ef4444'>({pct:.1f}%)</span>"
+                    elif pct > 0.01:
+                        # Tăng -> Màu Xanh lá
+                        change_str = f" <span style='color:#22c55e'>(+{pct:.1f}%)</span>"
+                    # Nếu bằng 0 thì không hiện gì thêm
+                    
+                    lines.append(f"- **{pname}**: {val_str}{change_str}")
+                
+                # Prediction Footer
+                lines.append(
+                    f"\nUsing the recommended feature set above, the estimated CO₂ emissions are: "
+                    f"<span style='color:#147a3c; font-weight:bold; font-size:1.1em'>{pred_co2:.0f} MtCO₂</span>"
+                )
+                
+                # Note Footer (Màu vàng/cam)
+                lines.append(
+                    f"\n<span style='color:#d97706; font-style:italic; font-size:0.9em'>"
+                    f"Note: There may be a discrepancy between the estimated CO₂ emissions and your specific target, "
+                    f"as the optimization algorithm operates under mathematical constraints.</span>"
+                )
 
-        recommend_text.object = "\n".join(lines)
+                recommend_text.object = "\n".join(lines)
 
+                # [Optional] Cập nhật UI input Data 2023 nếu cần
+                # ...
+                        
+            else:
+                recommend_text.object = f" **API Error:** {response.status_code} - {response.text}"
+
+        except Exception as e:
+            recommend_text.object = f" **System Error:** {str(e)}"
+        
+        finally:
+            btn_recommend.name = original_btn_name
+            btn_recommend.disabled = False
+                
     btn_recommend.on_click(run_recommend)
 
     recommend_block = pn.Column(
