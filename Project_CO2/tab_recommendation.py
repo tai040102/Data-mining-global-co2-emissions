@@ -13,7 +13,7 @@ FEATURES = [
     "Deforest_Percent",
     "Energy_Capita_kWh",
 ]
-API_URL = "http://localhost:8000/recommend"
+API_URL = "http://localhost:8003/recommend_v2"
 
 def _pretty_name(feat: str) -> str:
     return feat.replace("_", " ")
@@ -22,6 +22,7 @@ def _pretty_name(feat: str) -> str:
 def _fmt_value(v) -> str:
     """Format số cho đẹp: lớn thì không thập phân, nhỏ thì 2 chữ số."""
     if v is None:
+
         return "0"
     try:
         v = float(v)
@@ -56,7 +57,7 @@ def create_recommendation_view(df_all: pd.DataFrame):
     country_sel = pn.widgets.Select(
         name="Country",
         options=countries,
-        value="Vietnam" if "Vietnam" in countries else countries[0],
+        value="Viet Nam" if "Viet Nam" in countries else countries[0],
         css_classes=["rec-select"],
     )
 
@@ -70,7 +71,7 @@ def create_recommendation_view(df_all: pd.DataFrame):
 
     co2_target = pn.widgets.FloatInput(
         name="CO₂ Emission Target (MtCO₂)",
-        value=100,
+        placeholder = "Example: 100",
         step=10,
         css_classes=["rec-target-input"],
     )
@@ -144,68 +145,53 @@ def create_recommendation_view(df_all: pd.DataFrame):
         )
 
         # cột Data (Year) dùng input HTML để không phá layout
-        data_curr = pn.pane.HTML(
-            '<input type="number" class="rec-num-input" value="0" disabled />',
-            css_classes=["rec-data-curr"],
+        data_curr = pn.widgets.FloatInput(
+            value=0.0,
+            step=0.01,
+            # hide-spinner: ẩn mũi tên, minimal-input: bỏ khung viền
+            css_classes=["hide-spinner", "minimal-input"], 
+            sizing_mode="stretch_width",
+            height=30,
+            margin=(0, 10, 0, 0)
         )
-        INPUT_STYLE_NO_BOX = "border:none; background:transparent; width:100%; text-align:right; color:#333;"
+        
         def toggle_row(event, mr=max_reduce, mi=max_increase, dc=data_curr, dp=data_prev):
-                is_checked = event.new
+            is_checked = event.new
+            
+            mr.disabled = not is_checked
+            mi.disabled = not is_checked
+            
+            if is_checked:
+                # Nếu Tick (Chạy tối ưu): Ẩn ô nhập Data 2023 đi
+                dc.visible = False
+            else:
+                # Nếu Bỏ Tick (Cố định): Hiện ô nhập lên cho người dùng sửa
+                dc.visible = True
                 
-                mr.disabled = not is_checked
-                mi.disabled = not is_checked
-                
-                # Lấy giá trị hiện tại của Data 2022
-                try:
-                    val_text = dp.object.replace(",", "") 
-                    val_float = float(val_text)
-                except:
-                    val_float = 0
-
-                if is_checked:
-                    # Nếu tick -> Ẩn hoàn toàn (display:none)
-                    # Lưu ý: value vẫn format .2f để chuẩn dữ liệu
-                    dc.object = f'<input type="number" class="rec-num-input" value="{val_float:.2f}" style="display:none;" />'
-                else:
-                    # Nếu bỏ tick -> Hiện lại nhưng KHÔNG CÓ KHUNG (dùng style NO_BOX)
-                    # Format value="{val_float:.2f}" để lấy 2 số thập phân
-                    dc.object = (
-                        f'<input type="number" class="rec-num-input" '
-                        f'value="{val_float:.2f}" '
-                        f'disabled '
-                        f'style="{INPUT_STYLE_NO_BOX}" />'
-                    )
+                # Logic phụ: Nếu user chưa nhập gì (hoặc = 0), tự động lấy giá trị từ cột bên trái đổ sang
+                if dc.value == 0:
+                    try:
+                        # Parse giá trị từ data_prev (vd: "40.578")
+                        val_str = dp.object.replace(".", "").replace(",", ".")
+                        dc.value = float(val_str)
+                    except:
+                        pass
 
         cb.param.watch(toggle_row, 'value')
 
         feature_controls.append(
-            dict(
-                name=feat, checkbox=cb, data_prev=data_prev,
-                max_reduce=max_reduce, max_increase=max_increase, data_curr=data_curr,
-            )
+            dict(name=feat, checkbox=cb, data_prev=data_prev, max_reduce=max_reduce, max_increase=max_increase, data_curr=data_curr)
         )
 
         row = pn.Row(
             cb,
-            pn.pane.Markdown(
-                _pretty_name(feat),
-                css_classes=["rec-feature-name"],
-            ),
-            data_prev,
-            max_reduce,
-            max_increase,
-            data_curr,
-            css_classes=["rec-row"],
-            sizing_mode="stretch_width",
+            pn.pane.Markdown(_pretty_name(feat), css_classes=["rec-feature-name"]),
+            data_prev, max_reduce, max_increase, data_curr,
+            css_classes=["rec-row"], sizing_mode="stretch_width",
         )
         body_rows.append(row)
 
-    table = pn.Column(
-        header_row,
-        *body_rows,
-        css_classes=["rec-table"],
-        sizing_mode="stretch_width",
-    )
+    table = pn.Column(header_row, *body_rows, css_classes=["rec-table"], sizing_mode="stretch_width")
 
     # ========== UPDATE DATA THEO COUNTRY & YEAR ==========
     def update_feature_values(event=None):
@@ -215,8 +201,6 @@ def create_recommendation_view(df_all: pd.DataFrame):
         header_curr.object = f"**Data {ui_year}**"
 
         prev_year = ui_year - 1
-        curr_year = ui_year
-
         df_country = df_all[df_all["Country"] == country_sel.value]
         row_prev = df_country[df_country["Year"] == prev_year]
         
@@ -224,30 +208,26 @@ def create_recommendation_view(df_all: pd.DataFrame):
             col = fc["name"]
             is_checked = fc["checkbox"].value
 
-            # 1. Lấy Data 2022 (Prev)
+            # 1. Lấy dữ liệu thô từ DataFrame
             val_prev = 0
             if not row_prev.empty and col in row_prev.columns:
                 val_prev = row_prev.iloc[0][col]
             
             val_prev = 0 if pd.isna(val_prev) else val_prev
+            
+  
+
+            val_prev = round(float(val_prev), 2)
+
+            # 2. Cập nhật cột Data 2022 (Text hiển thị)
+    
             fc["data_prev"].object = _fmt_value(val_prev)
 
-            # 2. Xử lý Data 2023 (Curr)
-            raw_val = float(val_prev)
-
-            if is_checked:
-                # Nếu đang chỉnh sửa -> Ẩn
-                fc["data_curr"].object = (
-                    f'<input type="number" class="rec-num-input" value="{raw_val:.2f}" style="display:none;" />'
-                )
-            else:
-                # Nếu hiển thị -> Bỏ khung viền + Format 2 số thập phân
-                fc["data_curr"].object = (
-                    f'<input type="number" class="rec-num-input" '
-                    f'value="{raw_val:.2f}" '
-                    f'disabled '
-                    f'style="{INPUT_STYLE_NO_BOX}" />'
-                )
+            # 3. Cập nhật cột Data 2023 (Ô nhập liệu)
+            fc["data_curr"].value = val_prev
+            
+            # Logic ẩn hiện ô nhập liệu
+            fc["data_curr"].visible = not is_checked
 
     country_sel.param.watch(update_feature_values, "value")
     year_sel.param.watch(update_feature_values, "value")
@@ -265,7 +245,12 @@ def create_recommendation_view(df_all: pd.DataFrame):
         "",
         css_classes=["rec-result-text"],
     )
-
+    predict_inputs = {
+        feat: pn.widgets.FloatInput(
+            name=_pretty_name(feat), value=0.0, step=1, start=0, 
+            css_classes=["rec-predict-input", "hide-spinner"]
+        ) for feat in FEATURES
+    }
     def run_recommend(event):
         # 1. Chuẩn bị dữ liệu UI
         target = co2_target.value
@@ -274,7 +259,7 @@ def create_recommendation_view(df_all: pd.DataFrame):
         
         # Lấy danh sách feature được chọn (checkbox = True) để gửi đi tối ưu
         selected_controls = [fc for fc in feature_controls if fc["checkbox"].value]
-
+        
         if not selected_controls:
             recommend_text.object = "⚠️ Please select at least **one feature** to adjust."
             return
@@ -287,18 +272,44 @@ def create_recommendation_view(df_all: pd.DataFrame):
 
         try:
             # 2. Lấy Base Values (Dữ liệu thực tế năm 2022 - Year-1)
+            base_values = {}
+            
+            # A. CO2 (Lấy từ DF)
             prev_year = ui_year - 1
             df_country = df_all[df_all["Country"] == country]
             row_prev = df_country[df_country["Year"] == prev_year]
             
-            base_values = {}
-            if not row_prev.empty:
-                cols_to_get = FEATURES + ["Co2_MtCO2"] 
-                for col in cols_to_get:
-                    if col in row_prev.columns:
-                        val = row_prev.iloc[0][col]
-                        base_values[col] = float(val) if pd.notnull(val) else 0.0
-            
+            if not row_prev.empty and "Co2_MtCO2" in row_prev.columns:
+                val = row_prev.iloc[0]["Co2_MtCO2"]
+                base_values["Co2_MtCO2"] = float(val) if pd.notnull(val) else 0.0
+            else:
+                base_values["Co2_MtCO2"] = 0.0
+
+            # B. [QUAN TRỌNG] Lấy Feature từ UI
+            for fc in feature_controls:
+                feat_name = fc["name"]
+                is_optimizing = fc["checkbox"].value
+                
+                if not is_optimizing:
+                    # TRƯỜNG HỢP 1: KHÔNG TICK (User có thể đã sửa số ở Data 2023)
+                    # Lấy giá trị từ ô nhập liệu Data 2023
+                    val_float = float(fc["data_curr"].value)
+                else:
+                    # TRƯỜNG HỢP 2: CÓ TICK (Đang chạy tối ưu)
+                    # Lấy giá trị gốc Data 2022 (từ DF hoặc parse từ UI data_prev)
+                    # Ở đây ưu tiên lấy từ DataFrame cho chính xác
+                    val_float = 0.0
+                    if not row_prev.empty and feat_name in row_prev.columns:
+                        raw = row_prev.iloc[0][feat_name]
+                        val_float = float(raw) if pd.notnull(raw) else 0.0
+                    else:
+                        # Fallback parse từ UI Data 2022
+                        try:
+                            t = fc["data_prev"].object.replace(".","").replace(",",".")
+                            val_float = float(t)
+                        except: val_float = 0.0
+                
+                base_values[feat_name] = val_float
             # 3. Payload gửi API
             selected_features_payload = []
             for fc in selected_controls:
@@ -309,66 +320,55 @@ def create_recommendation_view(df_all: pd.DataFrame):
                 })
 
             payload = {
-                "country": country,
+                "country_name": country,
                 "year": ui_year,
-                "target": float(target),
-                "base_values": base_values,
-                "selected_features": selected_features_payload
+                "co2_target": float(target),
+                "fixed_features": base_values,
+                "feature_selection": selected_features_payload
             }
 
             # 4. Gọi API
-            response = requests.post(API_URL, json=payload, timeout=60)
+            response = requests.post(API_URL, json=payload, timeout=160)
             
             if response.status_code == 200:
                 res_data = response.json()
                 pred_co2 = res_data["predicted_co2"]
                 best_changes = res_data["best_change_pct"] 
                 
-                # ========== 5. FORMAT TEXT KẾT QUẢ (GIỐNG HÌNH MẪU) ==========
+                for feat_name, widget in predict_inputs.items():
+                    base_val = base_values.get(feat_name, 0.0)
+                    pct = best_changes.get(feat_name, 0.0)
+                    rec_val = base_val * (1 + pct / 100.0)
+                    widget.value = round(rec_val, 2)
                 
-                # Header
                 lines = [
                     f"Based on the information you provided, we recommend the following set of feature values "
                     f"to achieve CO₂ emissions as close as possible to your specified CO₂ target "
                     f"(<span style='color:#147a3c; font-weight:bold'>{target:.0f} MtCO₂</span>):"
                 ]
                 
-                # List Features: Hiển thị TẤT CẢ các biến (được tick và không được tick)
                 for fc in feature_controls:
                     fname = fc["name"]
                     pname = _pretty_name(fname)
                     
-                    # Lấy giá trị gốc
+                    # Lấy giá trị base (Lúc này base chính là cái user nhập hoặc data gốc)
                     base_val = base_values.get(fname, 0.0)
-                    
-                    # Lấy % thay đổi từ API (nếu không được chọn hoặc không thay đổi thì là 0)
                     pct = best_changes.get(fname, 0.0)
-                    
-                    # Tính giá trị mới: New = Base * (1 + pct/100)
                     new_val = base_val * (1 + pct / 100.0)
                     
-                    # Format số liệu (dùng hàm _fmt_value có sẵn)
                     val_str = _fmt_value(new_val)
                     
-                    # Format phần % thay đổi (Tô màu)
                     change_str = ""
-                    if pct < -0.01:
-                        # Giảm -> Màu Đỏ
-                        change_str = f" <span style='color:#ef4444'>({pct:.1f}%)</span>"
-                    elif pct > 0.01:
-                        # Tăng -> Màu Xanh lá
-                        change_str = f" <span style='color:#22c55e'>(+{pct:.1f}%)</span>"
-                    # Nếu bằng 0 thì không hiện gì thêm
+                    # Chỉ hiện % thay đổi nếu nó thực sự thay đổi (> 0.01%)
+                    if abs(pct) > 0.01:
+                        if pct < 0:
+                            change_str = f" <span style='color:#ef4444'>({pct:.1f}%)</span>"
+                        else:
+                            change_str = f" <span style='color:#22c55e'>(+{pct:.1f}%)</span>"
                     
                     lines.append(f"- **{pname}**: {val_str}{change_str}")
                 
-                # Prediction Footer
-                lines.append(
-                    f"\nUsing the recommended feature set above, the estimated CO₂ emissions are: "
-                    f"<span style='color:#147a3c; font-weight:bold; font-size:1.1em'>{pred_co2:.0f} MtCO₂</span>"
-                )
-                
-                # Note Footer (Màu vàng/cam)
+                lines.append(f"\nUsing the recommended feature set above, the estimated CO₂ emissions are: <span style='color:#147a3c; font-weight:bold; font-size:1.1em'>{pred_co2:.0f} MtCO₂</span>")
                 lines.append(
                     f"\n<span style='color:#d97706; font-style:italic; font-size:0.9em'>"
                     f"Note: There may be a discrepancy between the estimated CO₂ emissions and your specific target, "
@@ -376,15 +376,11 @@ def create_recommendation_view(df_all: pd.DataFrame):
                 )
 
                 recommend_text.object = "\n".join(lines)
-
-                # [Optional] Cập nhật UI input Data 2023 nếu cần
-                # ...
-                        
             else:
-                recommend_text.object = f" **API Error:** {response.status_code} - {response.text}"
+                recommend_text.object = f"❌ **API Error:** {response.status_code} - {response.text}"
 
         except Exception as e:
-            recommend_text.object = f" **System Error:** {str(e)}"
+            recommend_text.object = f"❌ **System Error:** {str(e)}"
         
         finally:
             btn_recommend.name = original_btn_name
@@ -399,75 +395,17 @@ def create_recommendation_view(df_all: pd.DataFrame):
         css_classes=["rec-recommend-block"],
     )
 
-    # ========== RIGHT CARD: PREDICT CO2 ==========
-    predict_inputs = {
-        feat: pn.widgets.FloatInput(
-            name=_pretty_name(feat),
-            value=0.0,
-            step=1,
-            css_classes=["rec-predict-input"],
-        )
-        for feat in FEATURES
-    }
-
-    btn_predict = pn.widgets.Button(
-        name="Predict",
-        button_type="success",
-        width=220,
-        css_classes=["run-btn", "rec-predict-btn"],
-    )
-
-    predict_result = pn.pane.Markdown(
-        "",
-        align="center",
-        css_classes=["rec-predict-result"],
-    )
-
-    def run_predict(event):
-        total = sum(widget.value for widget in predict_inputs.values())
-
-        predict_result.object = (
-            "The predicted total CO₂ emissions is:<br><br>"
-            f"<span style='color:#147a3c; font-size:22px; font-weight:700'>{total/100:.1f} MtCO₂</span>"
-        )
-
+    btn_predict = pn.widgets.Button(name="Predict", button_type="success", width=220, css_classes=["run-btn", "rec-predict-btn"])
+    predict_result = pn.pane.Markdown("", align="center", css_classes=["rec-predict-result"])
+    def run_predict(event): pass
     btn_predict.on_click(run_predict)
 
     predict_card = pn.Card(
-        pn.Column(
-            *predict_inputs.values(),
-            pn.Spacer(height=15),
-            pn.Row(pn.Spacer(), btn_predict, pn.Spacer()),
-            pn.Spacer(height=10),
-            predict_result,
-        ),
-        title="Predict CO₂ Emissions",
-        collapsible=False,
-        css_classes=["rec-predict-card"],
-        sizing_mode="fixed",
-        width=330,
+        pn.Column(*predict_inputs.values(), pn.Spacer(height=15), pn.Row(pn.Spacer(), btn_predict, pn.Spacer()), pn.Spacer(height=10), predict_result),
+        title="Predict CO₂ Emissions", collapsible=False, css_classes=["rec-predict-card"], sizing_mode="fixed", width=330,
     )
 
-    # ========== FINAL LAYOUT ==========
-    left_panel = pn.Column(
-        header,
-        pn.Spacer(height=5),
-        top_row,
-        pn.Spacer(height=10),
-        table,
-        pn.Spacer(height=10),
-        recommend_block,
-        sizing_mode="stretch_width",
-        css_classes=["rec-left-panel"],
-        width=900,
-    )
-
-    layout = pn.Row(
-        left_panel,
-        pn.Spacer(width=20),
-        predict_card,
-        sizing_mode="stretch_width",
-        css_classes=["rec-main-row"],
-    )
+    left_panel = pn.Column(header, pn.Spacer(height=5), top_row, pn.Spacer(height=10), table, pn.Spacer(height=10), recommend_block, sizing_mode="stretch_width", css_classes=["rec-left-panel"], width=900)
+    layout = pn.Row(left_panel, pn.Spacer(width=20), predict_card, sizing_mode="stretch_width", css_classes=["rec-main-row"])
 
     return layout
