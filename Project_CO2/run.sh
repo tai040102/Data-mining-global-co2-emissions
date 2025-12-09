@@ -3,8 +3,8 @@
 # Chạy FastAPI
 # python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload &
 python -m uvicorn api_forecast:app --port 8001 --reload 
-python -m uvicorn api_XGBoost:app --port 8002 --reload 
-python -m uvicorn api_recommend:app --port 8003 --reload 
+python -m uvicorn api_XGBoost_v2:app --port 8002 --reload 
+python -m uvicorn api_recommend_v2:app --port 8003 --reload 
 
 # Chạy Panel Dashboard
 # python -m panel serve dashboard.py --address 0.0.0.0 --port 5006 --autoreload --show
