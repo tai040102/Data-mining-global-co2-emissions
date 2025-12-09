@@ -117,8 +117,7 @@ def create_recommendation_view(df_all: pd.DataFrame):
     body_rows = []
 
     for feat in FEATURES:
-        cb = pn.widgets.Checkbox(value=False)
-
+        cb = pn.widgets.Checkbox(value=False, align='center', margin=(0, 5, 0, 5))
         data_prev = pn.pane.Markdown(
             "0",
             css_classes=["rec-data-cell"],
@@ -368,7 +367,7 @@ def create_recommendation_view(df_all: pd.DataFrame):
                     
                     lines.append(f"- **{pname}**: {val_str}{change_str}")
                 
-                lines.append(f"\nUsing the recommended feature set above, the estimated CO₂ emissions are: <span style='color:#147a3c; font-weight:bold; font-size:1.1em'>{pred_co2:.0f} MtCO₂</span>")
+                lines.append(f"\nUsing the recommended feature set above, the estimated CO₂ emissions are: <span style='color:#147a3c; font-weight:bold; font-size:1.1em'>{pred_co2:.2f} MtCO₂</span>")
                 lines.append(
                     f"\n<span style='color:#d97706; font-style:italic; font-size:0.9em'>"
                     f"Note: There may be a discrepancy between the estimated CO₂ emissions and your specific target, "
@@ -377,10 +376,10 @@ def create_recommendation_view(df_all: pd.DataFrame):
 
                 recommend_text.object = "\n".join(lines)
             else:
-                recommend_text.object = f"❌ **API Error:** {response.status_code} - {response.text}"
+                recommend_text.object = f"**API Error:** {response.status_code} - {response.text}"
 
         except Exception as e:
-            recommend_text.object = f"❌ **System Error:** {str(e)}"
+            recommend_text.object = f"**System Error:** {str(e)}"
         
         finally:
             btn_recommend.name = original_btn_name
@@ -394,18 +393,107 @@ def create_recommendation_view(df_all: pd.DataFrame):
         recommend_text,
         css_classes=["rec-recommend-block"],
     )
-
-    btn_predict = pn.widgets.Button(name="Predict", button_type="success", width=220, css_classes=["run-btn", "rec-predict-btn"])
-    predict_result = pn.pane.Markdown("", align="center", css_classes=["rec-predict-result"])
-    def run_predict(event): pass
-    btn_predict.on_click(run_predict)
-
-    predict_card = pn.Card(
-        pn.Column(*predict_inputs.values(), pn.Spacer(height=15), pn.Row(pn.Spacer(), btn_predict, pn.Spacer()), pn.Spacer(height=10), predict_result),
-        title="Predict CO₂ Emissions", collapsible=False, css_classes=["rec-predict-card"], sizing_mode="fixed", width=330,
+    API_PREDICT_URL = "http://localhost:8002/predict_xgboost_v2"
+    
+    btn_predict = pn.widgets.Button(
+        name="Predict", 
+        button_type="success", 
+        width=220, 
+        css_classes=["run-btn", "rec-predict-btn"]
+    )
+    
+    predict_result = pn.pane.Markdown(
+        "", 
+        align="center", 
+        css_classes=["rec-predict-result"]
     )
 
-    left_panel = pn.Column(header, pn.Spacer(height=5), top_row, pn.Spacer(height=10), table, pn.Spacer(height=10), recommend_block, sizing_mode="stretch_width", css_classes=["rec-left-panel"], width=900)
-    layout = pn.Row(left_panel, pn.Spacer(width=20), predict_card, sizing_mode="stretch_width", css_classes=["rec-main-row"])
+    def run_predict(event):
+        # 1. Lấy dữ liệu từ giao diện
+        country = country_sel.value
+        
+        # Tạo dictionary features từ các ô input bên phải
+        # predict_inputs đã được định nghĩa ở trên (dòng 230+)
+        features_payload = {
+            feat_name: widget.value 
+            for feat_name, widget in predict_inputs.items()
+        }
+
+        # 2. Đổi trạng thái nút bấm (Feedback cho người dùng)
+        btn_predict.name = "Predicting..."
+        btn_predict.disabled = True
+        predict_result.object = "Connecting to AI Model..."
+
+        try:
+            # 3. Gửi Request xuống API XGBoost (Port 8002)
+            payload = {
+                "country": country,
+                "features": features_payload
+            }
+            
+            # Timeout ngắn (5s) vì XGBoost chạy rất nhanh
+            response = requests.post(API_PREDICT_URL, json=payload, timeout=5)
+
+            if response.status_code == 200:
+                data = response.json()
+                pred_val = data.get("prediction", 0.0)
+                
+                # 4. Hiển thị kết quả đẹp
+                predict_result.object = (
+                    "The predicted total CO₂ emissions is:<br><br>"
+                    f"<span style='color:#147a3c; font-size:22px; font-weight:700'>"
+                    f"{pred_val:,.2f} MtCO₂"
+                    f"</span>"
+                )
+            else:
+                predict_result.object = f"API Error: {response.status_code}\n{response.text}"
+
+        except Exception as e:
+            predict_result.object = f"Connection Error (Check Port 8002):\n{str(e)}"
+        
+        finally:
+            # 5. Reset trạng thái nút bấm
+            btn_predict.name = "Predict"
+            btn_predict.disabled = False
+
+    btn_predict.on_click(run_predict)
+
+    # Layout thẻ bên phải
+    predict_card = pn.Card(
+        pn.Column(
+            *predict_inputs.values(), 
+            pn.Spacer(height=15), 
+            pn.Row(pn.Spacer(), btn_predict, pn.Spacer()), 
+            pn.Spacer(height=10), 
+            predict_result
+        ),
+        title="Predict CO₂ Emissions", 
+        collapsible=False, 
+        css_classes=["rec-predict-card"], 
+        sizing_mode="fixed", 
+        width=330,
+    )
+
+    # ========== FINAL LAYOUT ==========
+    left_panel = pn.Column(
+        header, 
+        pn.Spacer(height=5), 
+        top_row, 
+        pn.Spacer(height=10), 
+        table, 
+        pn.Spacer(height=10), 
+        recommend_block, 
+        sizing_mode="stretch_width", 
+        css_classes=["rec-left-panel"], 
+        width=900
+    )
+    
+    layout = pn.Row(
+        left_panel, 
+        pn.Spacer(width=20), 
+        predict_card, 
+        sizing_mode="stretch_width", 
+        css_classes=["rec-main-row"]
+    )
 
     return layout

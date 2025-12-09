@@ -17,7 +17,7 @@ app = FastAPI(title="CO₂ Recommendation API v2")
 # ---------------------------
 MODELS_DIR = "Models"
 MODEL_FILE = "Model_XGBoost_Final.joblib"
-DATA_FILE = "/home/anle/Data-mining-global-co2-emissions/Project_CO2/data/historical_data.csv"
+DATA_FILE = "/root/Data-mining-global-co2-emissions/Project_CO2/data/historical_data.csv"
 ENCODER_FILE = "Encoder_Country_Final.joblib"
 
 def _path(name: str) -> str:
