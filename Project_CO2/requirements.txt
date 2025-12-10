@@ -1,7 +1,11 @@
 fastapi
-uvicorn
+uvicorn[standard]
 panel
-requests
 bokeh
 numpy
 pandas
+requests
+xgboost
+scikit-learn
+joblib
+tensorflow-cpu
